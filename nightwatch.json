@@ -1,0 +1,16 @@
+{
+  "src_folders": [
+    "tests"
+  ],
+  "selenium": {
+    "start_process": true,
+    "server_path": "./node_modules/selenium-server-standalone/index.jar"
+  },
+  "test_settings": {
+    "default": {
+      "desiredCapabilities": {
+        "browserName": "chrome"
+      }
+    }
+  }
+}

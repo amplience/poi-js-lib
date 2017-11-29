@@ -1,0 +1,4 @@
+node_modules
+bower_components
+tests_output/*
+selenium-debug.log

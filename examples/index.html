@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<style>
+    .img-container > img {
+        max-width:100%;
+        display: block;
+    }
+
+    .img-container > svg{
+        z-index:2;
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        height:100%;
+    }
+
+    .img-point, .img-point-2{
+        cursor: pointer;
+        z-index:3;
+        width:30px;
+        height:30px;
+        border:5px solid #880000;
+        -webkit-border-radius:20px;
+        -moz-border-radius:20px;
+        border-radius:20px;
+        margin-top:-20px;
+        margin-left:-20px;
+        text-align:center;
+    }
+
+    .img-point:before, .img-point-2:before{
+        display:inline-block;
+        position:relative;
+        top:50%;
+        margin-top:-5px;
+        vertical-align:top;
+        content:"";
+        width:10px;
+        height:10px;
+        -webkit-border-radius:5px;
+        -moz-border-radius:5px;
+        border-radius:5px;
+        background: #880000;
+    }
+
+    .img-area{
+        fill:#13AB5E
+    }
+
+    .img-point-2:before{
+        background-color: #000;
+    }
+
+    .img-point-2{
+        border-color:#000;
+    }
+
+</style>
+<body>
+
+<div class="img-container">
+    <img class="js-poi-img another class" src="http://i1.adis.ws/i/solutions/zinc_4a_zinc_tealandbluecombination_view2.jpg" alt="">
+</div>
+
+<script type="text/javascript" src="../dist/poi-lib.js"></script>
+<script>
+    var poi = new POI({
+        domain: 'http://i1.adis.ws',
+        account: 'solutions',
+        containerClass: 'img-container',
+        imgClass: 'js-poi-img',
+        images: [
+            {
+                name: "zinc_4a_zinc_tealandbluecombination_view2",
+//                data: {"isImage":true,"alpha":false,"width":4273,"height":2268,"format":"JPEG","metadata":{"image":{"colorSpace":"rgb","resolutionY":72,"valid":true,"resolutionX":72,"depth":8,"alpha":false,"format":"JPEG","width":4273,"id":"bfbc9a80-c2ef-4df7-837a-2fa25be1824a","height":2268,"resolutionUnits":1},"hotSpots":{"hasPolygon":true,"hotSpots":{"list":[{"selector":"img-point","id":"475e1c78-55f0-42fe-a841-870fbf18785c","type":"sku","points":{"x":0.82334144592285,"y":0.85594985064338},"target":"rightLeg"},{"selector":".img-point-2","id":"43041d6f-aa1e-4654-b24d-3cd5b9cc1568","type":"sku","points":{"x":0.11536297798157,"y":0.69578024471507},"target":"leftLeg"},{"selector":".img-area","id":"c17448ea-cf85-43e2-a5f4-16277250f95b","type":"sku","points":[{"x":0.72445787512352,"y":0.19781434697355},{"x":0.8297635232058,"y":0.19781434697355},{"x":0.8297635232058,"y":0.42811810702956},{"x":0.72445787512352,"y":0.42811810702956}],"target":"rightPillow"},{"selector":"img-point-2","id":"eae74187-2d3c-4ede-aa7c-43835addc4b3","type":"sku","points":{"x":0.27611713409424,"y":0.3154537784352},"target":"leftPillow"},{"selector":"img-area","id":"91e379bd-13a3-46f0-8e37-4786336fe699","type":"sku","points":[{"x":0.38189503211493,"y":0.43744145425146},{"x":0.50689503211493,"y":0.43744145425146},{"x":0.50689503211493,"y":0.67273557189852},{"x":0.38189503211493,"y":0.67273557189852}],"target":"middle"}]},"hasPoint":true},"file":{"size":1233166,"id":"bfbc9a80-c2ef-4df7-837a-2fa25be1824a","type":"JPEG"},"pointOfInterest":{"w":0.125,"h":0.23529411764706,"x":0.17789419174194,"y":0.061920201918658},"exif":{"gpsLocation":"0.0, 0.0","orientation":1,"exposureTime":"1\/160","software":"Adobe Photoshop CS6 (Macintosh)","taken":1397049205,"isoSpeed":100,"model":"Canon EOS 5D Mark III","id":"bfbc9a80-c2ef-4df7-837a-2fa25be1824a","make":"Canon","focalLength":"50\/1"}},"status":"ok"},
+                hotspotCallbacks:[
+                    {
+                        target: "rightLeg",
+                        action: "click",
+                        callback: function(evt, settings){
+                            console.log('yay, i was clicked :)', settings);
+                        },
+                        initCallback: function(settings){
+                            console.log('init callback hotspot', settings);
+                        }
+                    },
+                    {
+                        target: "leftLeg",
+                        action: "mouseover",
+                        callback: function(evt, settings){
+                            console.log('yay, i was hovered :)', settings);
+                        },
+                        initCallback: function(settings){
+                            console.log('init callback hotspot', settings);
+                        }
+                    }
+                ],
+                areaCallbacks:[
+                    {
+                        target: "*",
+                        action: "click",
+                        callback: function(evt, settings){
+                            console.log('generic click', settings);
+
+                        },
+                        initCallback: function(settings){
+                            console.log('init callback area', settings);
+                        }
+                    },
+                    {
+                        target: "middle",
+                        action: "click",
+                        callback: function(evt, settings){
+                            console.log('yay, i was clicked :)', settings);
+                        }
+                    },
+                    {
+                        target: "rightPillow",
+                        action: "mouseover",
+                        callback: function(evt, settings){
+                            console.log('yay, i was hovered :)', settings);
+                        }
+                    }
+                ]
+            }
+        ]
+    });
+    poi.init();
+</script>
+
+</body>
+</html>

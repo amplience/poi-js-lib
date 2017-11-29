@@ -1,0 +1,40 @@
+{
+  "name": "poi-js-lib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "http-server . -p 8000",
+    "test": "nightwatch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amplience/poi-js-lib.git"
+  },
+  "author": "arthur@amplience.com",
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/amplience/poi-js-lib#readme",
+  "dependencies": {
+    "atomicjs": "v3.2.0"
+  },
+  "devDependencies": {
+    "chromedriver": "^2.33.2",
+    "deep-equal": "^1.0.1",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-gzip": "^1.4.0",
+    "gulp-jshint": "^2.0.1",
+    "gulp-minify": "0.0.12",
+    "gulp-notify": "^2.2.0",
+    "gulp-notify-growl": "^1.0.2",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-watch": "^4.3.8",
+    "http-server": "^0.10.0",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.2.0",
+    "merge2": "^1.0.2",
+    "nightwatch": "^0.9.16",
+    "selenium-server-standalone": "^2.53.1"
+  }
+}
