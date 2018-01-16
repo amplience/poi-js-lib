@@ -1,0 +1,98 @@
+html, body {
+    height: 100%;
+    min-height: 100%;
+}
+
+.switcher-panel {
+    position: fixed;
+    z-index: 1;
+    bottom: 0;
+    left: 15px;
+    padding: 15px;
+    width: 200px;
+    min-height:192px;
+    background-color: #efefef;
+    padding-bottom: 10px;
+    display: none;
+}
+
+.input-wrapper {
+    margin-bottom: 10px;
+}
+
+.input-wrapper > label {
+    display: block;
+    font-size: 14px;
+    Font-family: Arial, Helvetica, sans-serif;
+}
+
+.input-wrapper > input[type="text"] {
+    font-size: 14px;
+    width: 100%;
+    padding: 3px 5px;
+    display: block;
+    text-indent: 3px;
+    box-sizing: border-box;
+    margin-top: 2px;
+    border: 1px solid #bcbcbc;
+}
+
+.input-wrapper >textarea {
+    font-size: 12px;
+    padding: 3px 5px;
+    display: block;
+    margin-top: 2px;
+    border: 1px solid #bcbcbc;
+    box-sizing: border-box;
+    height:131px;
+}
+
+.switcher-panel-nav {
+    position: fixed;
+    bottom: 5px;
+    left: 25px;
+    z-index: 2;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.switcher-panel > input[type="button"] {
+    cursor: pointer;
+    float: right;
+    padding: 5px 10px;
+    font-size: 18px;
+    bacground: #fff;
+    border: 1px solid #adadad;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.switcher-panel > input[type="button"]:hover {
+    background: #fcfcfc;
+}
+
+.switcher-panel-nav > svg,
+.code-copy-nav > svg{
+    fill: #6d6d6d;
+}
+
+.switcher-panel-nav:hover > svg,
+.code-copy-nav:hover > svg {
+    fill: #474747;
+}
+
+.switcher-panel-nav.with-error > svg {
+    fill: #ea1212;
+}
+
+.code-copy-nav {
+    position: fixed;
+    bottom: 5px;
+    left: 75px;
+    z-index: 2;
+    width: 50px;
+    height: 40px;
+    cursor: pointer;
+}
