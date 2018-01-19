@@ -41,6 +41,13 @@ gulp.task('build', function () {
 });
 
 
+gulp.task('playground', ['build'], function () {
+    gulp.src('dist/poi-lib.min.js')
+            .pipe(gulp.dest('./examples/playground')
+    )
+});
+
+
 gulp.task('jshint', function () {
     gulp.src('src/*.js')
         .pipe(jshint('.jshintrc'))
@@ -52,10 +59,10 @@ gulp.task('jshint', function () {
         }))
 });
 
-gulp.task('watch', ['build'], function () {
+gulp.task('watch', ['playground'], function () {
     watch(['./src/*.js'], function () {
         gulp.start('build');
     });
 });
 
-gulp.task('default', ['build']);
+gulp.task('default', ['playground']);
