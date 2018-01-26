@@ -37,6 +37,16 @@ html, body {
     border: 1px solid #bcbcbc;
 }
 
+.input-wrapper > input[type="text"]::-webkit-input-placeholder {
+    color: #d3d3d3;
+}
+.input-wrapper > input[type="text"]::-moz-placeholder {
+    color: #d3d3d3;
+}
+.input-wrapper > input[type="text"]:-ms-input-placeholder {
+    color: #d3d3d3;
+}
+
 .input-wrapper >textarea {
     margin:0;
     font-size: 12px;
