@@ -10,7 +10,10 @@
 <body>
 
 <div class="js-img-container img-container">
-    <img class="js-poi-img another class" src="http://i1.adis.ws/i/csdemo/img_1664_5" alt="">
+    <picture>
+        <source srcset="http://i1.adis.ws/i/csdemo/img_1664_5">
+        <img class="another class" src="http://i1.adis.ws/i/csdemo/img_1664_5" alt="">
+    </picture>
 </div>
 
 <div class="js_panel_nav switcher-panel-nav">
@@ -66,7 +69,12 @@
         <label for="base_path">Product base path</label>
         <input type="text" name="basePath" placeholder="https://us.billabong.com/shop/product/" id="base_path">
     </div>
-    <input type="button" value="Submit" class="js_panel_submit">
+    <div class="input-wrapper">
+        <div class="note-txt">
+            * This tool will work best if the image has its own, separate container
+        </div>
+    </div>
+    <input type="button" value="Create" class="js_panel_submit">
 </div>
 
 <script type="text/javascript" src="poi-lib.min.js"></script>

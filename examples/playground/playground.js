@@ -20,6 +20,15 @@
         },
         findPOIClasses: function (imgName) {
             var self = this;
+
+            function getChildren(elem, skipMe) {
+                var r = [];
+                for (; elem; elem = elem.nextSibling)
+                    if (elem.nodeType == 1 && elem != skipMe)
+                        r.push(elem);
+                return r;
+            }
+
             var imgs = Array.prototype.slice.call(document.querySelectorAll("img"));
             var filteredImgs = imgs.filter(function (img) {
                 return img.src.indexOf(encodeURIComponent(imgName)) !== -1;
@@ -30,9 +39,26 @@
             }
 
             var img = filteredImgs[0];
+            var pic = img;
+
+
+            var container = img.parentNode;
+            if (container.tagName.toLowerCase() === 'picture') {
+                container = container.parentNode;
+                pic = img.parentNode;
+            }
+
             img.classList.add(self.defaults.imgClass);
 
-            var container = img.parentElement;
+
+            var siblings = getChildren(container.firstChild, pic);
+
+            if (siblings.length > 0) {
+                var $wrapper = document.createElement('div');
+                pic.parentNode.insertBefore($wrapper, pic);
+                $wrapper.appendChild(pic);
+            }
+
             container.classList.add(self.defaults.containerClass);
 
             return {
@@ -169,7 +195,7 @@
         },
         panelInit: function ($panelNav, $panel, $panelButton, $panneltoHide) {
             var self = this;
-            self.panelToggle($panelNav, $panel, function(){
+            self.panelToggle($panelNav, $panel, function () {
                 $panneltoHide.hide();
             });
 
@@ -204,9 +230,9 @@
 
             var libCode = 'window.PoiLibCode={};';
 
-            for (var x in self.defaults){
+            for (var x in self.defaults) {
                 if (self.defaults.hasOwnProperty(x)) {
-                    if(x === 'jsonData' || typeof self.generatedCode.defaults[x] !== 'undefined'){
+                    if (x === 'jsonData' || typeof self.generatedCode.defaults[x] !== 'undefined') {
                         continue;
                     }
                     self.generatedCode.defaults[x] = self.defaults[x];
