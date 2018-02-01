@@ -11,10 +11,10 @@
         },
         defaults: {
             account: 'csdemo',
-            imgName: 'img_1664_5',
+            imgName: 'CB_dHP_20180201_Otdr',
             imgClass: 'js-poi-img',
             containerClass: 'js-poi-img-container',
-            basePath: 'https://us.billabong.com/shop/product/',
+            basePath: 'https://www.crateandbarrel.com/',
             path: 'https://i1.adis.ws/',
             jsonData: null
         },
