@@ -111,6 +111,10 @@ window.POI.prototype = {
     },
 
     iteratePoints: function (imgInfo) {
+        if (!imgInfo) {
+            return;
+        }
+
         var hotspots = this.hotspots();
         var areaInterest = this.areaInterest();
         var points = imgInfo.points;
