@@ -363,7 +363,6 @@ window.POI.prototype = {
         var areaInterest = this.areaInterest();
         var points = imgInfo.points;
 
-
         for (var i = 0; i < points.length; i++) {
             if (points[i].points.constructor === Array) {
                 areaInterest.create(points[i], imgInfo);
