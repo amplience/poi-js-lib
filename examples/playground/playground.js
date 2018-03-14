@@ -11,7 +11,7 @@
         },
         defaults: {
             account: 'csdemo',
-            imgName: 'CB_dHP_20180201_Otdr',
+            imgName: 'cb_d2X2Th_Kids_RWL_BdrmBoy_01_201803',
             imgClass: 'js-poi-img',
             containerClass: 'js-poi-img-container',
             basePath: 'https://www.crateandbarrel.com/',
