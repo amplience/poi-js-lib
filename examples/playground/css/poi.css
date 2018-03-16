@@ -1,7 +1,10 @@
-.img-container{
+.img-wrapper{
     text-align:center;
-    max-width:998px;
-    z-index: 1;
+}
+
+.img-container{
+    display: inline-block;
+    vertical-align:top;
 }
 
 .img-container > img {
