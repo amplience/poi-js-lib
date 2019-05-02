@@ -248,6 +248,7 @@ window.POI = function (params) {
     this.imgsLoaded = 0;
     this.params = params;
     this.namedImagesData = {};
+    this.namedImages = {};
 };
 
 window.POI.prototype = {
@@ -282,56 +283,107 @@ window.POI.prototype = {
         var self = this;
         var imgs = this.params.images;
         var windowSize = this.getWindowSize();
+        var $imgs = document.querySelectorAll('img.' + this.params.imgClass);
 
         for (var x = imgs.length - 1; x >= 0; x--) {
             (function () {
                 var i = x;
                 var img = imgs[i];
 
-                if (imgs[i].breakpoints) {
-                    img = imgs[i].breakpoints.find(function (el) {
-                        var min = el.minWidth || 0;
-                        var max = el.maxWidth || 2000;
-                        return min <= windowSize && max >= windowSize;
-                    });
+                if (img.name === '*') {
+                    for (var y = $imgs.length - 1; y >= 0; y--) {
+                        (function () {
+                            var j = y;
+                            var imgToGetData = img;
+                            var imgWithName = $imgs[j];
+                            var src = imgWithName.getAttribute('src');
+                            var name = src.split('/');
+                            name = name[name.length - 1];
 
-                    if (img && !img.areaCallbacks) {
-                        img.areaCallbacks = imgs[i].areaCallbacks;
-                    }
+                            if (self.namedImages[name]) {
+                                return false;
+                            }
+                            var imgObject = {
+                                name: name,
+                                hotspotCallbacks: imgToGetData.hotspotCallbacks,
+                                areaCallbacks: imgToGetData.areaCallbacks,
+                            };
 
-                    if (img && !img.hotspotCallbacks) {
-                        img.hotspotCallbacks = imgs[i].hotspotCallbacks;
+                            if (imgObject && imgObject.data) {
+                                self.generateData({
+                                    data: imgObject.data,
+                                    img: imgObject,
+                                    callback: function (imgInfo) {
+                                        callback(imgInfo);
+                                    }
+                                });
+                            } else if (imgObject && self.namedImagesData[imgObject.name]) {
+                                callback(self.namedImagesData[imgObject.name]);
+                            } else {
+                                //Calls Ajax for each image, and executes callback for each found hotspots
+                                atomic.ajax({
+                                    url: self.params.domain + '/i/' + self.params.account + '/' + imgObject.name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime()
+                                })
+                                    .success(function (data) {
+                                        self.generateData({
+                                            data: data,
+                                            img: imgObject,
+                                            callback: function (imgInfo) {
+                                                callback(imgInfo);
+                                            }
+                                        });
+                                    })
+                                    .error(function (err) {
+                                        console.error('Image failed to load', err);
+                                    });
+                            }
+                        })()
                     }
-                }
-                if (img && img.data) {
-                    self.generateData({
-                        data: img.data,
-                        img: img,
-                        callback: function (imgInfo) {
-                            callback(imgInfo);
-                        }
-                    });
-                } else if (img && self.namedImagesData[img.name]) {
-                    callback(self.namedImagesData[img.name]);
                 } else {
-                    //Calls Ajax for each image, and executes callback for each found hotspots
-                    atomic.ajax({
-                        url: self.params.domain + '/i/' + self.params.account + '/' + img.name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime()
-                    })
-                        .success(function (data) {
-                            self.generateData({
-                                data: data,
-                                img: img,
-                                callback: function (imgInfo) {
-                                    callback(imgInfo);
-                                }
-                            });
-                        })
-                        .error(function (err) {
-                            console.error('Image failed to load', err);
+                    if (imgs[i].breakpoints) {
+                        img = imgs[i].breakpoints.find(function (el) {
+                            var min = el.minWidth || 0;
+                            var max = el.maxWidth || 2000;
+                            return min <= windowSize && max >= windowSize;
                         });
-                }
 
+                        if (img && !img.areaCallbacks) {
+                            img.areaCallbacks = imgs[i].areaCallbacks;
+                        }
+
+                        if (img && !img.hotspotCallbacks) {
+                            img.hotspotCallbacks = imgs[i].hotspotCallbacks;
+                        }
+                    }
+                    if (img && img.data) {
+                        self.generateData({
+                            data: img.data,
+                            img: img,
+                            callback: function (imgInfo) {
+                                callback(imgInfo);
+                            }
+                        });
+                    } else if (img && self.namedImagesData[img.name]) {
+                        callback(self.namedImagesData[img.name]);
+                    } else {
+                        //Calls Ajax for each image, and executes callback for each found hotspots
+                        atomic.ajax({
+                            url: self.params.domain + '/i/' + self.params.account + '/' + img.name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime()
+                        })
+                            .success(function (data) {
+                                self.generateData({
+                                    data: data,
+                                    img: img,
+                                    callback: function (imgInfo) {
+                                        callback(imgInfo);
+                                    }
+                                });
+                            })
+                            .error(function (err) {
+                                console.error('Image failed to load', err);
+                            });
+                    }
+                }
             }());
         }
     },
@@ -342,6 +394,10 @@ window.POI.prototype = {
         var $foundImg = null;
         var regExp = new RegExp(img.name);
         var src = null;
+
+        if (img.name === '*') {
+            regExp = /[\s\S]+/g;
+        }
 
         for (var x = $imgs.length - 1; x >= 0; x--) {
             var picture = $imgs[x].parentNode;
@@ -443,6 +499,9 @@ window.POI.prototype = {
         var self = this;
 
         for (var i = imgs.length - 1; i >= 0; i--) {
+            if (imgs[i].name && imgs[i].name !== '*') {
+                self.namedImages[imgs[i].name] = true;
+            }
             if (imgs[i].breakpoints && imgs[i].breakpoints.length) {
                 needResizeSubscription = true;
                 break;

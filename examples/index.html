@@ -82,6 +82,9 @@
 <div class="img-container">
     <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/blue-and-pink">
 </div>
+<div class="img-container">
+    <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/download2">
+</div>
 
 <script type="text/javascript" src="../dist/poi-lib.js"></script>
 <script>
@@ -91,6 +94,44 @@
         containerClass: 'img-container',
         imgClass: 'js-poi-img',
         images: [
+            {
+                name: '*',
+                areaCallbacks: [
+                    {
+                        target: "*",
+                        action: "click",
+                        callback: function (evt, settings) {
+                            console.log('generic click', settings);
+
+                        },
+                        initCallback: function (settings) {
+                            console.log('init callback area', settings);
+                        }
+                    }
+                ],
+                hotspotCallbacks: [
+                    {
+                        target: "*",
+                        action: "click",
+                        callback: function (evt, settings) {
+                            console.log('yay, i was clicked :)', settings);
+                        },
+                        initCallback: function (settings) {
+                            console.log('init callback hotspot', settings);
+                        }
+                    },
+                    {
+                        target: "*",
+                        action: "mouseover",
+                        callback: function (evt, settings) {
+                            console.log('yay, i was hovered :)', settings);
+                        },
+                        initCallback: function (settings) {
+                            console.log('init callback hotspot', settings);
+                        }
+                    }
+                ]
+            },
             {
                 name: "100023354_JJ",
                 breakpoints: [
