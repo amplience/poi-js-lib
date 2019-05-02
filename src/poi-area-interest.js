@@ -24,23 +24,20 @@ POI.prototype.areaInterest = function () {
             if (!imgInfo.svg) {
                 $svg = document.createElementNS(svgNS, 'svg');
                 $svg.setAttributeNS(null, 'viewBox', '0 0 ' + imgInfo.dimensions.width + ' ' + imgInfo.dimensions.height);
+                $svg.setAttributeNS(null, 'data-name', imgInfo.name);
                 $parent.appendChild($svg);
                 imgInfo.svg = $svg;
-            }
-            else {
+            } else {
                 $svg = imgInfo.svg;
             }
 
             if (selector.indexOf('.') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttributeNS(null, 'class', selector);
-            }
-
-            else if (selector.indexOf('#') === 0) {
+            } else if (selector.indexOf('#') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttributeNS(null, 'id', selector);
-            }
-            else {
+            } else {
                 $elem.setAttributeNS(null, 'class', selector);
             }
 
@@ -65,10 +62,21 @@ POI.prototype.areaInterest = function () {
                         imgInfo: imgInfo
                     });
                 }
-            }
-
-            else {
+            } else {
                 console.warn('No parent with specified className ' + parent.params.containerClass + ' was found.');
+            }
+        },
+
+        hideOthers: function (point, imgInfo) {
+            var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
+            var otherAreas = $parent.getElementsByTagName('svg');
+
+            for (var i = otherAreas.length - 1; i >= 0; i--) {
+                if (otherAreas[i].getAttribute('data-name') === imgInfo.name) {
+                    otherAreas[i].style.display = 'block';
+                } else {
+                    otherAreas[i].style.display = 'none';
+                }
             }
         }
     };

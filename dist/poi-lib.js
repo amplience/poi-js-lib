@@ -247,6 +247,7 @@ window.POI = function (params) {
     this.images = [];
     this.imgsLoaded = 0;
     this.params = params;
+    this.namedImagesData = {};
 };
 
 window.POI.prototype = {
@@ -270,37 +271,57 @@ window.POI.prototype = {
                 svg: null
             };
             self.images.push(imgInfo);
+            self.namedImagesData[params.img.name] = imgInfo;
         }
 
         self.imgsLoaded += 1;
+
         params.callback(imgInfo);
     },
     getImgData: function (callback) {
         var self = this;
         var imgs = this.params.images;
+        var windowSize = this.getWindowSize();
 
-        for (var x = 0; x < imgs.length; x++) {
+        for (var x = imgs.length - 1; x >= 0; x--) {
             (function () {
                 var i = x;
-                if (imgs[i].data) {
+                var img = imgs[i];
+
+                if (imgs[i].breakpoints) {
+                    img = imgs[i].breakpoints.find(function (el) {
+                        var min = el.minWidth || 0;
+                        var max = el.maxWidth || 2000;
+                        return min <= windowSize && max >= windowSize;
+                    });
+
+                    if (img && !img.areaCallbacks) {
+                        img.areaCallbacks = imgs[i].areaCallbacks;
+                    }
+
+                    if (img && !img.hotspotCallbacks) {
+                        img.hotspotCallbacks = imgs[i].hotspotCallbacks;
+                    }
+                }
+                if (img && img.data) {
                     self.generateData({
-                        data: imgs[i].data,
-                        img: imgs[i],
+                        data: img.data,
+                        img: img,
                         callback: function (imgInfo) {
                             callback(imgInfo);
                         }
                     });
-                }
-
-                else {
+                } else if (img && self.namedImagesData[img.name]) {
+                    callback(self.namedImagesData[img.name]);
+                } else {
                     //Calls Ajax for each image, and executes callback for each found hotspots
                     atomic.ajax({
-                        url: self.params.domain + '/i/' + self.params.account + '/' + imgs[i].name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime()
+                        url: self.params.domain + '/i/' + self.params.account + '/' + img.name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime()
                     })
                         .success(function (data) {
                             self.generateData({
                                 data: data,
-                                img: imgs[i],
+                                img: img,
                                 callback: function (imgInfo) {
                                     callback(imgInfo);
                                 }
@@ -319,14 +340,31 @@ window.POI.prototype = {
         var $imgs = document.querySelectorAll('img.' + this.params.imgClass);
         var attr = this.params.imgAttribute || 'src';
         var $foundImg = null;
-        for (var x = 0; x < $imgs.length; x++) {
-            var regExp = new RegExp(img.name);
-            var src = $imgs[x].getAttribute(attr).match(regExp);
+        var regExp = new RegExp(img.name);
+        var src = null;
 
-            if (src && src.length > 0) {
-                //Found image
-                $foundImg = $imgs[x];
-                break;
+        for (var x = $imgs.length - 1; x >= 0; x--) {
+            var picture = $imgs[x].parentNode;
+            if (picture && picture.tagName.toLowerCase() === 'picture') {
+                var childNodes = picture.children;
+
+                for (var y = childNodes.length - 1; y >= 0; y--) {
+                    src = childNodes[y].getAttribute(attr) ? childNodes[y].getAttribute(attr).match(regExp) : childNodes[y].getAttribute('srcset').match(regExp);
+
+                    if (src && src.length > 0) {
+                        //Found image
+                        $foundImg = $imgs[x];
+                        break;
+                    }
+                }
+            } else {
+                src = $imgs[x].getAttribute(attr).match(regExp);
+
+                if (src && src.length > 0) {
+                    //Found image
+                    $foundImg = $imgs[x];
+                    break;
+                }
             }
         }
 
@@ -338,7 +376,7 @@ window.POI.prototype = {
         if (imgData.constructor !== Array) {
             imgData = [imgData];
         }
-        for (var x = 0; x < imgData.length; x++) {
+        for (var x = imgData.length - 1; x >= 0; x--) {
             if (imgData[x] &&
                 imgData[x].metadata &&
                 imgData[x].metadata.hotSpots &&
@@ -363,11 +401,13 @@ window.POI.prototype = {
         var areaInterest = this.areaInterest();
         var points = imgInfo.points;
 
-        for (var i = 0; i < points.length; i++) {
+        hotspots.removeOthers(imgInfo);
+
+        for (var i = points.length - 1; i >= 0; i--) {
             if (points[i].points.constructor === Array) {
+                areaInterest.hideOthers(points[i], imgInfo);
                 areaInterest.create(points[i], imgInfo);
-            }
-            else {
+            } else {
                 hotspots.create(points[i], imgInfo);
             }
         }
@@ -375,7 +415,7 @@ window.POI.prototype = {
     assignEvents: function ($elem, target, callbacks, params) {
         //Loop over events callback, defined in params, and assign them to hotspots or area of interest
         if (callbacks && callbacks.length > 0) {
-            for (var z = 0; z < callbacks.length; z++) {
+            for (var z = callbacks.length - 1; z >= 0; z--) {
                 (function () {
                     var callback = callbacks[z];
                     if (callback.target === target || callback.target === '*') {
@@ -392,8 +432,39 @@ window.POI.prototype = {
         }
     },
 
+    getWindowSize: function () {
+        return document.documentElement.clientWidth;
+    },
+
+    checkResizeSubscription: function () {
+        var imgs = this.params.images;
+        var needResizeSubscription = false;
+        var resizeTimer;
+        var self = this;
+
+        for (var i = imgs.length - 1; i >= 0; i--) {
+            if (imgs[i].breakpoints && imgs[i].breakpoints.length) {
+                needResizeSubscription = true;
+                break;
+            }
+        }
+
+        if (needResizeSubscription) {
+            window.onresize = function (e) {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    self.getImgData(function (imgInfo) {
+                        self.iteratePoints(imgInfo);
+                    });
+                }, 350);
+            };
+        }
+
+    },
+
     init: function () {
         var self = this;
+        this.checkResizeSubscription();
         this.getImgData(function (imgInfo) {
             self.iteratePoints(imgInfo);
         });
@@ -497,17 +568,16 @@ POI.prototype.hotspots = function () {
             if (selector.indexOf('.') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttribute('class', selector);
-            }
-
-            else if (selector.indexOf('#') === 0) {
+            } else if (selector.indexOf('#') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttribute('id', selector);
-            }
-            else {
+            } else {
                 $elem.setAttribute('class', selector);
             }
 
             var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
+
+            $elem.setAttribute('data-type', 'poi-hotspot');
 
             if ($parent && parent.dom.hasClass($parent, parent.params.containerClass)) {
 
@@ -520,6 +590,8 @@ POI.prototype.hotspots = function () {
                 $elem.style.position = 'absolute';
                 $elem.style.left = x + '%';
                 $elem.style.top = y + '%';
+
+                $elem.setAttribute('data-name', imgInfo.name);
 
                 $parent.style.position = 'relative';
                 $parent.appendChild($elem);
@@ -534,11 +606,19 @@ POI.prototype.hotspots = function () {
                         imgInfo: imgInfo
                     });
                 }
-            }
-
-            else {
+            } else {
                 console.warn('No parent with specified className ' + parent.params.containerClass + ' was found.');
             }
+        },
+
+        removeOthers: function (imgInfo) {
+            var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
+            var otherHotspots = $parent.querySelectorAll('[data-type="poi-hotspot"]');
+
+            for (var i = otherHotspots.length - 1; i >= 0; i--) {
+                $parent.removeChild(otherHotspots[i]);
+            }
+
         }
     };
     return methods;
@@ -571,23 +651,20 @@ POI.prototype.areaInterest = function () {
             if (!imgInfo.svg) {
                 $svg = document.createElementNS(svgNS, 'svg');
                 $svg.setAttributeNS(null, 'viewBox', '0 0 ' + imgInfo.dimensions.width + ' ' + imgInfo.dimensions.height);
+                $svg.setAttributeNS(null, 'data-name', imgInfo.name);
                 $parent.appendChild($svg);
                 imgInfo.svg = $svg;
-            }
-            else {
+            } else {
                 $svg = imgInfo.svg;
             }
 
             if (selector.indexOf('.') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttributeNS(null, 'class', selector);
-            }
-
-            else if (selector.indexOf('#') === 0) {
+            } else if (selector.indexOf('#') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttributeNS(null, 'id', selector);
-            }
-            else {
+            } else {
                 $elem.setAttributeNS(null, 'class', selector);
             }
 
@@ -612,10 +689,21 @@ POI.prototype.areaInterest = function () {
                         imgInfo: imgInfo
                     });
                 }
-            }
-
-            else {
+            } else {
                 console.warn('No parent with specified className ' + parent.params.containerClass + ' was found.');
+            }
+        },
+
+        hideOthers: function (point, imgInfo) {
+            var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
+            var otherAreas = $parent.getElementsByTagName('svg');
+
+            for (var i = otherAreas.length - 1; i >= 0; i--) {
+                if (otherAreas[i].getAttribute('data-name') === imgInfo.name) {
+                    otherAreas[i].style.display = 'block';
+                } else {
+                    otherAreas[i].style.display = 'none';
+                }
             }
         }
     };
