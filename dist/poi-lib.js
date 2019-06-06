@@ -265,6 +265,8 @@ window.POI.prototype = {
                     width: params.data.width,
                     height: params.data.height
                 },
+                canvas: params.canvas,
+                changeSize: params.changeSize,
                 $img: $img,
                 data: params.img,
                 name: params.img.name,
@@ -284,6 +286,37 @@ window.POI.prototype = {
         var imgs = this.params.images;
         var windowSize = this.getWindowSize();
         var $imgs = document.querySelectorAll('img.' + this.params.imgClass);
+        var $sources = document.getElementsByTagName('source');
+
+        var getInfo = function (imgObject) {
+            var queryStr = imgObject.query || '';
+            var query = imgObject.name.includes('?') ? '&X-Amp-Trace=true&v=' + new Date().getTime() : '?' + queryStr + '&X-Amp-Trace=true&v=' + new Date().getTime();
+            atomic.ajax({
+                url: self.params.domain + '/i/' + self.params.account + '/' + imgObject.name + query
+            })
+                .success(function (data) {
+                    var translate = data.find(function (el) {
+                        return el.type === 'translate';
+                    });
+                    if (!translate || !translate.data || !translate.data.output || !translate.data.output.layerCommand) {
+                        return false;
+                    }
+                    var metadata = translate.data.output.layerCommand.metadata;
+                    var canvas = translate.data.output.layerCommand.info.canvas;
+                    self.generateData({
+                        data: metadata,
+                        canvas: canvas,
+                        changeSize: queryStr.includes('crop') || imgObject.name.includes('crop'),
+                        img: imgObject,
+                        callback: function (imgInfo) {
+                            callback(imgInfo);
+                        }
+                    });
+                })
+                .error(function (err) {
+                    console.error('Image failed to load', err);
+                });
+        };
 
         for (var x = imgs.length - 1; x >= 0; x--) {
             (function () {
@@ -300,11 +333,14 @@ window.POI.prototype = {
                             var name = src.split('/');
                             name = name[name.length - 1];
 
-                            if (self.namedImages[name]) {
+                            var cleanName = name.split('?')[0];
+
+                            if (self.namedImages[cleanName]) {
                                 return false;
                             }
                             var imgObject = {
                                 name: name,
+                                clearName: cleanName,
                                 hotspotCallbacks: imgToGetData.hotspotCallbacks,
                                 areaCallbacks: imgToGetData.areaCallbacks,
                             };
@@ -321,21 +357,7 @@ window.POI.prototype = {
                                 callback(self.namedImagesData[imgObject.name]);
                             } else {
                                 //Calls Ajax for each image, and executes callback for each found hotspots
-                                atomic.ajax({
-                                    url: self.params.domain + '/i/' + self.params.account + '/' + imgObject.name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime()
-                                })
-                                    .success(function (data) {
-                                        self.generateData({
-                                            data: data,
-                                            img: imgObject,
-                                            callback: function (imgInfo) {
-                                                callback(imgInfo);
-                                            }
-                                        });
-                                    })
-                                    .error(function (err) {
-                                        console.error('Image failed to load', err);
-                                    });
+                                getInfo(imgObject)
                             }
                         })()
                     }
@@ -355,6 +377,45 @@ window.POI.prototype = {
                             img.hotspotCallbacks = imgs[i].hotspotCallbacks;
                         }
                     }
+                    if (!img.query) {
+                        var query;
+                        var parsName;
+
+                        for (var k = $imgs.length - 1; k >= 0; k--) {
+                            var srcParsed = $imgs[k].getAttribute('src');
+                            var nameParsed = srcParsed.split('/');
+                            nameParsed = nameParsed[nameParsed.length - 1];
+
+                            if (nameParsed.includes(img.name) && nameParsed.includes('?')) {
+                                query = nameParsed.split('?');
+                                parsName = query[0];
+                                query = query[query.length - 1];
+
+                                if (query && parsName === img.name) {
+                                    img.query = query;
+                                }
+                            }
+
+                        }
+
+                        for (var k = $sources.length - 1; k >= 0; k--) {
+                            var src = $sources[k].getAttribute('srcset');
+                            var name = src.split('/');
+                            name = name[name.length - 1];
+
+                            if (name.includes('?')) {
+                                query = name.split('?');
+                                parsName = query[0];
+                                query = query[query.length - 1];
+
+                                if (query && parsName === img.name) {
+                                    img.query = query;
+                                }
+                            }
+
+                        }
+
+                    }
                     if (img && img.data) {
                         self.generateData({
                             data: img.data,
@@ -367,21 +428,7 @@ window.POI.prototype = {
                         callback(self.namedImagesData[img.name]);
                     } else {
                         //Calls Ajax for each image, and executes callback for each found hotspots
-                        atomic.ajax({
-                            url: self.params.domain + '/i/' + self.params.account + '/' + img.name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime()
-                        })
-                            .success(function (data) {
-                                self.generateData({
-                                    data: data,
-                                    img: img,
-                                    callback: function (imgInfo) {
-                                        callback(imgInfo);
-                                    }
-                                });
-                            })
-                            .error(function (err) {
-                                console.error('Image failed to load', err);
-                            });
+                        getInfo(img)
                     }
                 }
             }());
@@ -392,7 +439,7 @@ window.POI.prototype = {
         var $imgs = document.querySelectorAll('img.' + this.params.imgClass);
         var attr = this.params.imgAttribute || 'src';
         var $foundImg = null;
-        var regExp = new RegExp(img.name);
+        var regExp = new RegExp(img.clearName || img.name);
         var src = null;
 
         if (img.name === '*') {
@@ -460,8 +507,9 @@ window.POI.prototype = {
         hotspots.removeOthers(imgInfo);
 
         for (var i = points.length - 1; i >= 0; i--) {
+            areaInterest.hideOthers(points[i], imgInfo);
+
             if (points[i].points.constructor === Array) {
-                areaInterest.hideOthers(points[i], imgInfo);
                 areaInterest.create(points[i], imgInfo);
             } else {
                 hotspots.create(points[i], imgInfo);
@@ -639,21 +687,55 @@ POI.prototype.hotspots = function () {
             $elem.setAttribute('data-type', 'poi-hotspot');
 
             if ($parent && parent.dom.hasClass($parent, parent.params.containerClass)) {
+                var pointX = point.points.x * imgInfo.dimensions.width;
+                var pointY = point.points.y * imgInfo.dimensions.height;
+                var canvas = imgInfo.canvas;
+                var newX;
+                var newY;
+                var needRecalculate = imgInfo.changeSize;
 
-                var x = point.points.x.toString().slice(2);
-                x = x.substr(0, 2) + '.' + x.substr(2);
+                if (canvas) {
+                    var canvasX = canvas.x;
+                    var canvasY = canvas.y;
+                    var canvasW = canvas.width;
+                    var canvasH = canvas.height;
 
-                var y = point.points.y.toString().slice(2);
-                y = y.substr(0, 2) + '.' + y.substr(2);
+                    newX = (pointX - canvasX) * 100 / canvasW;
 
-                $elem.style.position = 'absolute';
-                $elem.style.left = x + '%';
-                $elem.style.top = y + '%';
 
-                $elem.setAttribute('data-name', imgInfo.name);
+                    newY = (pointY - canvasY) * 100 / canvasH;
 
-                $parent.style.position = 'relative';
-                $parent.appendChild($elem);
+                }
+                if (needRecalculate) {
+                    var x = newX;
+                    var y = newY;
+
+                    $elem.style.position = 'absolute';
+                    $elem.style.left = x + '%';
+                    $elem.style.top = y + '%';
+
+                    $elem.setAttribute('data-name', imgInfo.name);
+
+                    $parent.style.position = 'relative';
+                    $parent.appendChild($elem);
+
+                } else if (!needRecalculate) {
+                    var x = point.points.x.toString().slice(2);
+                    x = x.substr(0, 2) + '.' + x.substr(2);
+
+                    var y = point.points.y.toString().slice(2);
+                    y = y.substr(0, 2) + '.' + y.substr(2);
+
+                    $elem.style.position = 'absolute';
+                    $elem.style.left = x + '%';
+                    $elem.style.top = y + '%';
+
+                    $elem.setAttribute('data-name', imgInfo.name);
+
+                    $parent.style.position = 'relative';
+                    $parent.appendChild($elem);
+
+                }
 
                 if (target && target.length > 0) {
                     $elem.setAttribute('data-target', target);
@@ -672,16 +754,21 @@ POI.prototype.hotspots = function () {
 
         removeOthers: function (imgInfo) {
             var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
-            var otherHotspots = $parent.querySelectorAll('[data-type="poi-hotspot"]');
+            var otherHotspots = $parent && $parent.querySelectorAll('[data-type="poi-hotspot"]');
+
+            if (!otherHotspots) {
+                return false;
+            }
 
             for (var i = otherHotspots.length - 1; i >= 0; i--) {
-                $parent.removeChild(otherHotspots[i]);
+                $parent && $parent.removeChild(otherHotspots[i]);
             }
 
         }
     };
     return methods;
-};
+}
+;
 
 
 'use strict';
@@ -706,10 +793,22 @@ POI.prototype.areaInterest = function () {
             var svgNS = 'http://www.w3.org/2000/svg';
             var $group = document.createElementNS(svgNS, 'g');
             var $elem = document.createElementNS(svgNS, 'polygon');
+            var canvas = imgInfo.canvas;
+            var isX = false;
+            var isY = false;
+            var newX;
+            var newY;
+
+            if (canvas) {
+                var canvasX = canvas.x;
+                var canvasY = canvas.y;
+                var canvasW = canvas.width;
+                var canvasH = canvas.height;
+            }
 
             if (!imgInfo.svg) {
                 $svg = document.createElementNS(svgNS, 'svg');
-                $svg.setAttributeNS(null, 'viewBox', '0 0 ' + imgInfo.dimensions.width + ' ' + imgInfo.dimensions.height);
+                $svg.setAttributeNS(null, 'viewBox', '0 0 ' + (canvasW || imgInfo.dimensions.width) + ' ' + (canvasH || imgInfo.dimensions.height));
                 $svg.setAttributeNS(null, 'data-name', imgInfo.name);
                 $parent.appendChild($svg);
                 imgInfo.svg = $svg;
@@ -730,8 +829,14 @@ POI.prototype.areaInterest = function () {
             if ($parent && parent.dom.hasClass($parent, parent.params.containerClass)) {
                 var pointsCalc = '';
 
-                point.points.forEach(function (v) {
-                    pointsCalc += ((imgInfo.dimensions.width * v.x) + ',' + (imgInfo.dimensions.height * v.y) + ' ');
+                point.points.forEach(function (v, ind) {
+                    var x = imgInfo.dimensions.width * v.x;
+                    var y = imgInfo.dimensions.height * v.y;
+                    if (canvas) {
+                        x = Math.abs(canvasX - x);
+                        y = Math.abs(canvasY - y);
+                    }
+                    pointsCalc += (x + ',' + y + ' ');
                 });
 
                 $elem.setAttributeNS(null, 'points', pointsCalc);
@@ -755,7 +860,11 @@ POI.prototype.areaInterest = function () {
 
         hideOthers: function (point, imgInfo) {
             var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
-            var otherAreas = $parent.getElementsByTagName('svg');
+            var otherAreas = $parent && $parent.getElementsByTagName('svg');
+
+            if (!otherAreas || !otherAreas.length) {
+                return false;
+            }
 
             for (var i = otherAreas.length - 1; i >= 0; i--) {
                 if (otherAreas[i].getAttribute('data-name') === imgInfo.name) {

@@ -31,21 +31,55 @@ POI.prototype.hotspots = function () {
             $elem.setAttribute('data-type', 'poi-hotspot');
 
             if ($parent && parent.dom.hasClass($parent, parent.params.containerClass)) {
+                var pointX = point.points.x * imgInfo.dimensions.width;
+                var pointY = point.points.y * imgInfo.dimensions.height;
+                var canvas = imgInfo.canvas;
+                var newX;
+                var newY;
+                var needRecalculate = imgInfo.changeSize;
 
-                var x = point.points.x.toString().slice(2);
-                x = x.substr(0, 2) + '.' + x.substr(2);
+                if (canvas) {
+                    var canvasX = canvas.x;
+                    var canvasY = canvas.y;
+                    var canvasW = canvas.width;
+                    var canvasH = canvas.height;
 
-                var y = point.points.y.toString().slice(2);
-                y = y.substr(0, 2) + '.' + y.substr(2);
+                    newX = (pointX - canvasX) * 100 / canvasW;
 
-                $elem.style.position = 'absolute';
-                $elem.style.left = x + '%';
-                $elem.style.top = y + '%';
 
-                $elem.setAttribute('data-name', imgInfo.name);
+                    newY = (pointY - canvasY) * 100 / canvasH;
 
-                $parent.style.position = 'relative';
-                $parent.appendChild($elem);
+                }
+                if (needRecalculate) {
+                    var x = newX;
+                    var y = newY;
+
+                    $elem.style.position = 'absolute';
+                    $elem.style.left = x + '%';
+                    $elem.style.top = y + '%';
+
+                    $elem.setAttribute('data-name', imgInfo.name);
+
+                    $parent.style.position = 'relative';
+                    $parent.appendChild($elem);
+
+                } else if (!needRecalculate) {
+                    var x = point.points.x.toString().slice(2);
+                    x = x.substr(0, 2) + '.' + x.substr(2);
+
+                    var y = point.points.y.toString().slice(2);
+                    y = y.substr(0, 2) + '.' + y.substr(2);
+
+                    $elem.style.position = 'absolute';
+                    $elem.style.left = x + '%';
+                    $elem.style.top = y + '%';
+
+                    $elem.setAttribute('data-name', imgInfo.name);
+
+                    $parent.style.position = 'relative';
+                    $parent.appendChild($elem);
+
+                }
 
                 if (target && target.length > 0) {
                     $elem.setAttribute('data-target', target);
@@ -64,14 +98,19 @@ POI.prototype.hotspots = function () {
 
         removeOthers: function (imgInfo) {
             var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
-            var otherHotspots = $parent.querySelectorAll('[data-type="poi-hotspot"]');
+            var otherHotspots = $parent && $parent.querySelectorAll('[data-type="poi-hotspot"]');
+
+            if (!otherHotspots) {
+                return false;
+            }
 
             for (var i = otherHotspots.length - 1; i >= 0; i--) {
-                $parent.removeChild(otherHotspots[i]);
+                $parent && $parent.removeChild(otherHotspots[i]);
             }
 
         }
     };
     return methods;
-};
+}
+;
 

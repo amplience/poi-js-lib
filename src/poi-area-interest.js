@@ -20,10 +20,22 @@ POI.prototype.areaInterest = function () {
             var svgNS = 'http://www.w3.org/2000/svg';
             var $group = document.createElementNS(svgNS, 'g');
             var $elem = document.createElementNS(svgNS, 'polygon');
+            var canvas = imgInfo.canvas;
+            var isX = false;
+            var isY = false;
+            var newX;
+            var newY;
+
+            if (canvas) {
+                var canvasX = canvas.x;
+                var canvasY = canvas.y;
+                var canvasW = canvas.width;
+                var canvasH = canvas.height;
+            }
 
             if (!imgInfo.svg) {
                 $svg = document.createElementNS(svgNS, 'svg');
-                $svg.setAttributeNS(null, 'viewBox', '0 0 ' + imgInfo.dimensions.width + ' ' + imgInfo.dimensions.height);
+                $svg.setAttributeNS(null, 'viewBox', '0 0 ' + (canvasW || imgInfo.dimensions.width) + ' ' + (canvasH || imgInfo.dimensions.height));
                 $svg.setAttributeNS(null, 'data-name', imgInfo.name);
                 $parent.appendChild($svg);
                 imgInfo.svg = $svg;
@@ -44,8 +56,14 @@ POI.prototype.areaInterest = function () {
             if ($parent && parent.dom.hasClass($parent, parent.params.containerClass)) {
                 var pointsCalc = '';
 
-                point.points.forEach(function (v) {
-                    pointsCalc += ((imgInfo.dimensions.width * v.x) + ',' + (imgInfo.dimensions.height * v.y) + ' ');
+                point.points.forEach(function (v, ind) {
+                    var x = imgInfo.dimensions.width * v.x;
+                    var y = imgInfo.dimensions.height * v.y;
+                    if (canvas) {
+                        x = Math.abs(canvasX - x);
+                        y = Math.abs(canvasY - y);
+                    }
+                    pointsCalc += (x + ',' + y + ' ');
                 });
 
                 $elem.setAttributeNS(null, 'points', pointsCalc);
@@ -69,7 +87,11 @@ POI.prototype.areaInterest = function () {
 
         hideOthers: function (point, imgInfo) {
             var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
-            var otherAreas = $parent.getElementsByTagName('svg');
+            var otherAreas = $parent && $parent.getElementsByTagName('svg');
+
+            if (!otherAreas || !otherAreas.length) {
+                return false;
+            }
 
             for (var i = otherAreas.length - 1; i >= 0; i--) {
                 if (otherAreas[i].getAttribute('data-name') === imgInfo.name) {
