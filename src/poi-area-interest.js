@@ -21,10 +21,13 @@ POI.prototype.areaInterest = function () {
             var $group = document.createElementNS(svgNS, 'g');
             var $elem = document.createElementNS(svgNS, 'polygon');
             var canvas = imgInfo.canvas;
-            var isX = false;
-            var isY = false;
-            var newX;
-            var newY;
+            var layerCommand = imgInfo.layerCommand;
+            var tileEndW = layerCommand.tileEndW;
+            var tileEndH = layerCommand.tileEndH;
+
+            if (!$parent) {
+                return false;
+            }
 
             if (canvas) {
                 var canvasX = canvas.x;
@@ -55,32 +58,38 @@ POI.prototype.areaInterest = function () {
 
             if ($parent && parent.dom.hasClass($parent, parent.params.containerClass)) {
                 var pointsCalc = '';
+                var needRender = true;
 
                 point.points.forEach(function (v, ind) {
                     var x = imgInfo.dimensions.width * v.x;
                     var y = imgInfo.dimensions.height * v.y;
-                    var Nx = canvasW * v.x;
-                    var Ny = canvasH * v.y;
-                    if (canvasX <= 0) {
-                        x = Math.abs(canvasX + Nx);
+
+                    if (tileEndW > 0) {
+                        x = (v.x * tileEndW - canvasX)
                     } else {
                         x = Math.abs(canvasX - x);
                     }
 
-                    if (canvasY <= 0) {
-                        y = Math.abs(canvasY + Ny);
-
+                    if (tileEndH > 0) {
+                        y = (v.y * tileEndH - canvasY)
                     } else {
                         y = Math.abs(canvasY - y);
-
                     }
+
+                    if (x > canvasW || x > imgInfo.dimensions.width || y > canvasH || y > imgInfo.dimensions.height) {
+                        needRender = false;
+                    }
+
                     pointsCalc += (x + ',' + y + ' ');
                 });
 
-                $elem.setAttributeNS(null, 'points', pointsCalc);
+                if (needRender) {
+                    $elem.setAttributeNS(null, 'points', pointsCalc);
 
-                $svg.appendChild($group);
-                $group.appendChild($elem);
+                    $svg.appendChild($group);
+                    $group.appendChild($elem);
+                }
+
                 if (target && target.length > 0) {
                     $elem.setAttributeNS(null, 'data-target', target);
                     parent.assignEvents($group, target, callbacks, {

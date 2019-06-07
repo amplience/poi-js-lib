@@ -54,17 +54,16 @@ POI.prototype.hotspots = function () {
 
                 }
                 if (needRecalculate) {
-                    var x = newX;
-                    var y = newY;
+                    if (newX <= 100 && newY <= 100) {
+                        $elem.style.position = 'absolute';
+                        $elem.style.left = newX + '%';
+                        $elem.style.top = newY + '%';
 
-                    $elem.style.position = 'absolute';
-                    $elem.style.left = x + '%';
-                    $elem.style.top = y + '%';
+                        $elem.setAttribute('data-name', imgInfo.name);
 
-                    $elem.setAttribute('data-name', imgInfo.name);
-
-                    $parent.style.position = 'relative';
-                    $parent.appendChild($elem);
+                        $parent.style.position = 'relative';
+                        $parent.appendChild($elem);
+                    }
 
                 } else if (!needRecalculate) {
                     var x;
@@ -87,15 +86,16 @@ POI.prototype.hotspots = function () {
                         y = point.points.y * 100;
                     }
 
+                    if (x <= 100 && y <= 100) {
+                        $elem.style.position = 'absolute';
+                        $elem.style.left = x + '%';
+                        $elem.style.top = y + '%';
 
-                    $elem.style.position = 'absolute';
-                    $elem.style.left = x + '%';
-                    $elem.style.top = y + '%';
+                        $elem.setAttribute('data-name', imgInfo.name);
 
-                    $elem.setAttribute('data-name', imgInfo.name);
-
-                    $parent.style.position = 'relative';
-                    $parent.appendChild($elem);
+                        $parent.style.position = 'relative';
+                        $parent.appendChild($elem);
+                    }
 
                 }
 
