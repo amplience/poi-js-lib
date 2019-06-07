@@ -34,6 +34,9 @@ POI.prototype.hotspots = function () {
                 var pointX = point.points.x * imgInfo.dimensions.width;
                 var pointY = point.points.y * imgInfo.dimensions.height;
                 var canvas = imgInfo.canvas;
+                var layerCommand = imgInfo.layerCommand;
+                var tileEndW = layerCommand.tileEndW;
+                var tileEndH = layerCommand.tileEndH;
                 var newX;
                 var newY;
                 var needRecalculate = imgInfo.changeSize;
@@ -68,13 +71,18 @@ POI.prototype.hotspots = function () {
                     var y;
 
                     if (canvasX) {
-                        x = (point.points.x * (canvasW + 2 * canvasX) - canvasX) * 100 / canvasW;
+                        x = (point.points.x * tileEndW - canvasX) * 100 / canvasW;
+
+                        // x = (point.points.x * (imgInfo.dimensions.width + canvasX)) * 100 / canvasW;
                     } else {
                         x = point.points.x * 100;
                     }
 
                     if (canvasY) {
-                        y = (point.points.y * (canvasH + 2 * canvasY) - canvasY) * 100 / canvasH;
+                        y = (point.points.y * tileEndH - canvasY) * 100 / canvasH;
+
+
+                        //y = (point.points.y * (canvasH + canvasY + canvasY) - canvasY) * 100 / canvasH;
                     } else {
                         y = point.points.y * 100;
                     }

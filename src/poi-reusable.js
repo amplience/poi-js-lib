@@ -23,6 +23,7 @@ window.POI.prototype = {
                 },
                 canvas: params.canvas,
                 changeSize: params.changeSize,
+                layerCommand: params.layerCommand,
                 $img: $img,
                 data: params.img,
                 name: params.img.name,
@@ -58,9 +59,23 @@ window.POI.prototype = {
                         return false;
                     }
                     var metadata = translate.data.output.layerCommand.metadata;
+                    var layerCommand = translate.data.output.layerCommand;
+                    var childlayers = translate.data.output.childlayers;
                     var canvas = translate.data.output.layerCommand.info.canvas;
+
+                    if (!metadata) {
+                        metadata = childlayers.find(function (el) {
+                            return el.layerCommand.metadata;
+                        });
+
+                        if (metadata && metadata.layerCommand) {
+                            layerCommand = metadata.layerCommand;
+                            metadata = metadata.layerCommand.metadata;
+                        }
+                    }
                     self.generateData({
                         data: metadata,
+                        layerCommand: layerCommand,
                         canvas: canvas,
                         changeSize: queryStr.includes('crop') || imgObject.name.includes('crop'),
                         img: imgObject,
@@ -85,18 +100,24 @@ window.POI.prototype = {
                             var j = y;
                             var imgToGetData = img;
                             var imgWithName = $imgs[j];
-                            var src = imgWithName.getAttribute('src');
-                            var name = src.split('/');
-                            name = name[name.length - 1];
+                            var query;
+                            var srcParsed = imgWithName.getAttribute('src');
+                            withoutQuery = srcParsed.split('?');
 
-                            var cleanName = name.split('?')[0];
+                            nameParsed = withoutQuery[0].split('/');
+                            nameParsed = nameParsed[nameParsed.length - 1];
 
-                            if (self.namedImages[cleanName]) {
+                            if (withoutQuery.length > 1) {
+                                query = withoutQuery[withoutQuery.length - 1];
+                            }
+
+                            if (self.namedImages[nameParsed]) {
                                 return false;
                             }
                             var imgObject = {
-                                name: name,
-                                clearName: cleanName,
+                                name: nameParsed,
+                                query: query,
+                                clearName: nameParsed,
                                 hotspotCallbacks: imgToGetData.hotspotCallbacks,
                                 areaCallbacks: imgToGetData.areaCallbacks,
                             };
@@ -135,19 +156,20 @@ window.POI.prototype = {
                     }
                     if (!img.query) {
                         var query;
-                        var parsName;
+                        var withoutQuery;
+                        var nameParsed;
 
                         for (var k = $imgs.length - 1; k >= 0; k--) {
                             var srcParsed = $imgs[k].getAttribute('src');
-                            var nameParsed = srcParsed.split('/');
+                            withoutQuery = srcParsed.split('?');
+
+                            nameParsed = withoutQuery[0].split('/');
                             nameParsed = nameParsed[nameParsed.length - 1];
 
-                            if (nameParsed.includes(img.name) && nameParsed.includes('?')) {
-                                query = nameParsed.split('?');
-                                parsName = query[0];
-                                query = query[query.length - 1];
+                            if (nameParsed.includes(img.name) && withoutQuery.length > 1) {
+                                query = withoutQuery[withoutQuery.length - 1];
 
-                                if (query && parsName === img.name) {
+                                if (query && nameParsed === img.name) {
                                     img.query = query;
                                 }
                             }
@@ -156,15 +178,15 @@ window.POI.prototype = {
 
                         for (var k = $sources.length - 1; k >= 0; k--) {
                             var src = $sources[k].getAttribute('srcset');
-                            var name = src.split('/');
-                            name = name[name.length - 1];
+                            withoutQuery = src.split('?');
 
-                            if (name.includes('?')) {
-                                query = name.split('?');
-                                parsName = query[0];
-                                query = query[query.length - 1];
+                            nameParsed = withoutQuery[0].split('/');
+                            nameParsed = nameParsed[nameParsed.length - 1];
 
-                                if (query && parsName === img.name) {
+                            if (nameParsed.includes(img.name) && withoutQuery.length > 1) {
+                                query = withoutQuery[withoutQuery.length - 1];
+
+                                if (query && nameParsed === img.name) {
                                     img.query = query;
                                 }
                             }
