@@ -59,9 +59,20 @@ POI.prototype.areaInterest = function () {
                 point.points.forEach(function (v, ind) {
                     var x = imgInfo.dimensions.width * v.x;
                     var y = imgInfo.dimensions.height * v.y;
-                    if (canvas) {
+                    var Nx = canvasW * v.x;
+                    var Ny = canvasH * v.y;
+                    if (canvasX <= 0) {
+                        x = Math.abs(canvasX + Nx);
+                    } else {
                         x = Math.abs(canvasX - x);
+                    }
+
+                    if (canvasY <= 0) {
+                        y = Math.abs(canvasY + Ny);
+
+                    } else {
                         y = Math.abs(canvasY - y);
+
                     }
                     pointsCalc += (x + ',' + y + ' ');
                 });

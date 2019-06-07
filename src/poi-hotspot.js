@@ -64,11 +64,21 @@ POI.prototype.hotspots = function () {
                     $parent.appendChild($elem);
 
                 } else if (!needRecalculate) {
-                    var x = point.points.x.toString().slice(2);
-                    x = x.substr(0, 2) + '.' + x.substr(2);
+                    var x;
+                    var y;
 
-                    var y = point.points.y.toString().slice(2);
-                    y = y.substr(0, 2) + '.' + y.substr(2);
+                    if (canvasX) {
+                        x = (point.points.x * (canvasW + 2 * canvasX) - canvasX) * 100 / canvasW;
+                    } else {
+                        x = point.points.x * 100;
+                    }
+
+                    if (canvasY) {
+                        y = (point.points.y * (canvasH + 2 * canvasY) - canvasY) * 100 / canvasH;
+                    } else {
+                        y = point.points.y * 100;
+                    }
+
 
                     $elem.style.position = 'absolute';
                     $elem.style.left = x + '%';
