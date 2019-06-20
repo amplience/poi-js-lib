@@ -76,15 +76,16 @@
                 media="(max-width: 768px)">
         <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465"
                 media="(max-width: 768px)">
-        <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/100023354_JJ?$banner-poi$&layer0=[src=/i//100023354_JJ]">
+        <img class="js-poi-img another class"
+             src="//i1-qa.adis.ws/i/tesco/100023354_JJ?$banner-poi$&layer0=[src=/i//100023354_JJ]">
     </picture>
 </div>
-<div class="img-container">
+<!--<div class="img-container">
     <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/blue-and-pink?$banner-poi$&layer0=[src=/i//blue-and-pink]">
 </div>
 <div class="img-container">
     <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/download2?crop=100,100,300,300">
-</div>
+</div>-->
 
 <script type="text/javascript" src="../dist/poi-lib.js"></script>
 <script>
@@ -160,7 +161,7 @@
                 ],
                 areaCallbacks: [
                     {
-                        target: "testShouse",
+                        target: "*",
                         action: "click",
                         callback: function (evt, settings) {
                             console.log('generic click', settings);
@@ -168,6 +169,19 @@
                         },
                         initCallback: function (settings) {
                             console.log('init callback area', settings);
+                        }
+                    }
+                ],
+                hotspotCallbacks: [
+                    {
+                        target: "hair",
+                        action: "click",
+                        callback: function (evt, settings) {
+                            console.log('generic hair click', settings);
+
+                        },
+                        initCallback: function (settings) {
+                            console.log('init hair click', settings);
                         }
                     }
                 ]
@@ -179,14 +193,34 @@
                         target: "hat",
                         action: "click",
                         callback: function (evt, settings) {
-                            console.log('yay, i was clicked :)', settings);
+                            console.log('blue-and-pink');
                         },
                         initCallback: function (settings) {
-                            console.log('init callback hotspot', settings);
+                            console.log('init blue-and-pink');
                         }
                     },
                     {
                         target: "hat",
+                        action: "mouseover",
+                        callback: function (evt, settings) {
+                            console.log('blue-and-pink mouseover');
+                        },
+                        initCallback: function (settings) {
+                            console.log('init blue-and-pink mouseover');
+                        }
+                    },
+                    {
+                        target: "bracelet",
+                        action: "mouseover",
+                        callback: function (evt, settings) {
+                            console.log('blue-and-pink mouseover');
+                        },
+                        initCallback: function (settings) {
+                            console.log('init blue-and-pink mouseover');
+                        }
+                    },
+                    {
+                        target: "*",
                         action: "mouseover",
                         callback: function (evt, settings) {
                             console.log('yay, i was hovered :)', settings);

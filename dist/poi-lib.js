@@ -544,13 +544,27 @@ window.POI.prototype = {
             for (var z = callbacks.length - 1; z >= 0; z--) {
                 (function () {
                     var callback = callbacks[z];
-                    if (callback.target === target || callback.target === '*') {
+                    if (callback.target === target) {
                         $elem.addEventListener(callback.action, function (evt) {
                             callback.callback(evt, params);
                         }, false);
 
                         if (callback.initCallback) {
                             callback.initCallback(params);
+                        }
+                    } else if (callback.target === '*') {
+                        var findSimilarTargetEvent = callbacks.find(function (el) {
+                            return (el.target === target && el.action === callback.action);
+                        });
+
+                        if (!findSimilarTargetEvent) {
+                            $elem.addEventListener(callback.action, function (evt) {
+                                callback.callback(evt, params);
+                            }, false);
+
+                            if (callback.initCallback) {
+                                callback.initCallback(params);
+                            }
                         }
                     }
                 }());
