@@ -71,13 +71,13 @@
 
 <div class="img-container">
     <picture>
-        <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465"
+        <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=768 1x, //i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=1046 2x"
                 type="image/webp"
                 media="(max-width: 768px)">
-        <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465"
+        <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=768 1x, //i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=1046 2x"
                 media="(max-width: 768px)">
         <img class="js-poi-img another class"
-             src="//i1-qa.adis.ws/i/tesco/100023354_JJ?$banner-poi$&layer0=[src=/i//100023354_JJ]">
+             src="//i1-qa.adis.ws/i/tesco/100023354_JJ?w=1024$banner-poi$&layer0=[src=/i//100023354_JJ] 1x, //i1-qa.adis.ws/i/tesco/100023354_JJ?w=2048$banner-poi$&layer0=[src=/i//100023354_JJ] 2x">
     </picture>
 </div>
 <!--<div class="img-container">
@@ -97,7 +97,7 @@
         images: [
             {
                 name: '*',
-                areaCallbacks: [
+                polygonCallbacks: [
                     {
                         target: "*",
                         action: "click",
@@ -144,22 +144,22 @@
                         name: "1-shutterstock_588634790-825x465",
                         minWidth: 0,
                         maxWidth: 768,
-                        areaCallbacks: [
+                        hotspotCallbacks: [
                             {
                                 target: "hair",
                                 action: "click",
                                 callback: function (evt, settings) {
-                                    console.log('generic click', settings);
+                                    console.log('generic click 1-shutterstock_588634790-825x465', settings);
 
                                 },
                                 initCallback: function (settings) {
-                                    console.log('init callback area', settings);
+                                    console.log('init callback area 1-shutterstock_588634790-825x465', settings);
                                 }
                             }
                         ]
                     }
                 ],
-                areaCallbacks: [
+                polygonCallbacks: [
                     {
                         target: "*",
                         action: "click",
@@ -174,7 +174,7 @@
                 ],
                 hotspotCallbacks: [
                     {
-                        target: "hair",
+                        target: "test",
                         action: "click",
                         callback: function (evt, settings) {
                             console.log('generic hair click', settings);

@@ -6,7 +6,7 @@ POI.prototype.areaInterest = function () {
     var methods = {
         create: function (point, imgInfo) {
             //Create hotspots, add class, styles, find parent, add event callbacks
-            var callbacks = imgInfo.data.areaCallbacks;
+            var callbacks = imgInfo.data.polygonCallbacks;
             var selector = point.selector;
 
             if (!selector) {

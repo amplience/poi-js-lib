@@ -119,7 +119,7 @@ window.POI.prototype = {
                                 query: query,
                                 clearName: nameParsed,
                                 hotspotCallbacks: imgToGetData.hotspotCallbacks,
-                                areaCallbacks: imgToGetData.areaCallbacks,
+                                polygonCallbacks: imgToGetData.polygonCallbacks,
                             };
 
                             if (imgObject && imgObject.data) {
@@ -146,8 +146,8 @@ window.POI.prototype = {
                             return min <= windowSize && max >= windowSize;
                         });
 
-                        if (img && !img.areaCallbacks) {
-                            img.areaCallbacks = imgs[i].areaCallbacks;
+                        if (img && !img.polygonCallbacks) {
+                            img.polygonCallbacks = imgs[i].polygonCallbacks;
                         }
 
                         if (img && !img.hotspotCallbacks) {

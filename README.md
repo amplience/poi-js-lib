@@ -47,7 +47,7 @@ POI.init({
                         name: "zinc_4a_zinc_tealandbluecombination_mobile",
                         minWidth: 0,
                         maxWidth: 768,
-                        areaCallbacks: [
+                        polygonCallbacks: [
                             {
                                 target: "hand",
                                 action: "click",
@@ -61,7 +61,7 @@ POI.init({
                         ]
                     }
                 ],
-                areaCallbacks:[
+                polygonCallbacks:[
                     {
                         target: "rightLeg",
                         action: "click",
@@ -82,7 +82,7 @@ POI.init({
                     }
                 }
                 ],
-                areaCallbacks:[
+                polygonCallbacks:[
                     {
                         target: "*",
                         action: "click",
@@ -108,8 +108,8 @@ POI.init({
 This way, there is no need to make new AJAX request. 
 In the example above this param is commented out for demonstration purposes
 
-Also you can specify breakpoints array for picture images, each breakpoint object should contain image name, minWidth and maxWidth, also you can specify areaCallbacks and hotspotCallbacks for each breakpoint separately.
-In other case areaCallbacks and hotspotCallbacks will be inherited from it's main image.
+Also you can specify breakpoints array for picture images, each breakpoint object should contain image name, minWidth and maxWidth, also you can specify polygonCallbacks and hotspotCallbacks for each breakpoint separately.
+In other case polygonCallbacks and hotspotCallbacks will be inherited from it's main image.
 
 Also there is simple way to render hotspots and areas for all images. For this specify image name as * and target of callbacks as *, too.
 Images configuration with specified names (not *) will be more priorited.
@@ -139,7 +139,7 @@ hotspotCallbacks:[
 
 ```
 #!javascript
-areaCallbacks:[
+polygonCallbacks:[
         {
             target: "rightPillow",
             action: "click",

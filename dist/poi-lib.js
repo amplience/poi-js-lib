@@ -363,7 +363,7 @@ window.POI.prototype = {
                                 query: query,
                                 clearName: nameParsed,
                                 hotspotCallbacks: imgToGetData.hotspotCallbacks,
-                                areaCallbacks: imgToGetData.areaCallbacks,
+                                polygonCallbacks: imgToGetData.polygonCallbacks,
                             };
 
                             if (imgObject && imgObject.data) {
@@ -390,8 +390,8 @@ window.POI.prototype = {
                             return min <= windowSize && max >= windowSize;
                         });
 
-                        if (img && !img.areaCallbacks) {
-                            img.areaCallbacks = imgs[i].areaCallbacks;
+                        if (img && !img.polygonCallbacks) {
+                            img.polygonCallbacks = imgs[i].polygonCallbacks;
                         }
 
                         if (img && !img.hotspotCallbacks) {
@@ -833,7 +833,7 @@ POI.prototype.areaInterest = function () {
     var methods = {
         create: function (point, imgInfo) {
             //Create hotspots, add class, styles, find parent, add event callbacks
-            var callbacks = imgInfo.data.areaCallbacks;
+            var callbacks = imgInfo.data.polygonCallbacks;
             var selector = point.selector;
 
             if (!selector) {
