@@ -5,15 +5,15 @@ html, body {
 
 .switcher-panel {
     position: fixed;
-    z-index: 1;
-    bottom: 0;
+    bottom: 45px;
     left: 15px;
     padding: 15px;
     width: 400px;
-    min-height:192px;
+    min-height: 192px;
     background-color: #efefef;
     padding-bottom: 10px;
     display: none;
+    z-index: 3;
 }
 
 .input-wrapper {
@@ -40,30 +40,32 @@ html, body {
 .input-wrapper > input[type="text"]::-webkit-input-placeholder {
     color: #d3d3d3;
 }
+
 .input-wrapper > input[type="text"]::-moz-placeholder {
     color: #d3d3d3;
 }
+
 .input-wrapper > input[type="text"]:-ms-input-placeholder {
     color: #d3d3d3;
 }
 
-.input-wrapper >textarea {
-    margin:0;
+.input-wrapper > textarea {
+    margin: 0;
     font-size: 12px;
     padding: 3px 5px;
     display: block;
     margin-top: 2px;
     border: 1px solid #bcbcbc;
     box-sizing: border-box;
-    -webkit-box-sizing:border-box;
-    width:100%;
-    height:131px;
-    resize:none;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    height: 131px;
+    resize: none;
 }
 
 .switcher-panel-nav {
     position: fixed;
-    bottom: 5px;
+    bottom: 10px;
     left: 25px;
     z-index: 2;
     width: 35px;
@@ -88,13 +90,13 @@ html, body {
 }
 
 .switcher-panel-nav > svg,
-.code-copy-nav > svg{
-    fill: #6d6d6d;
+.code-copy-nav > svg {
+    fill: #ececec;
 }
 
 .switcher-panel-nav:hover > svg,
 .code-copy-nav:hover > svg {
-    fill: #474747;
+    fill: #e2e0e0;
 }
 
 .switcher-panel-nav.with-error > svg {
@@ -103,7 +105,7 @@ html, body {
 
 .code-copy-nav {
     position: fixed;
-    bottom: 5px;
+    bottom: 10px;
     left: 75px;
     z-index: 2;
     width: 50px;
@@ -111,11 +113,60 @@ html, body {
     cursor: pointer;
 }
 
-.note-txt{
+.note-txt {
     font-size: 12px;
     color: #7f7f7f;
 }
 
-.img-container img{
-    max-width:100%;
+.img-container {
+    position: relative;
+}
+
+.img-container img {
+    max-width: 100%;
+}
+
+.img-container > svg {
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.img-container svg g polygon {
+    fill: transparent;
+    opacity: 1;
+    stroke: #ececec;
+    stroke-width: 3px;
+    stroke-dasharray: 15;
+    stroke-linecap: round
+}
+
+@-webkit-keyframes square-anim {
+    25% {
+        stroke-dasharray: 15;
+        opacity: .5
+    }
+
+    50% {
+        stroke-dasharray: 10;
+        opacity: .7
+    }
+
+    75% {
+        stroke-dasharray: 6;
+        opacity: .8
+    }
+
+    100% {
+        stroke-dasharray: 0;
+        opacity: 1
+    }
+}
+
+.img-container svg g:hover polygon {
+    animation: square-anim .1s 1 ease-out;
+    animation-fill-mode: forwards
 }

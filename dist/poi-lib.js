@@ -441,6 +441,9 @@ window.POI.prototype = {
                     if (img && img.data) {
                         self.generateData({
                             data: img.data,
+                            layerCommand: img.layerCommand,
+                            canvas: img.canvas,
+                            changeSize: img.changeSize,
                             img: img,
                             callback: function (imgInfo) {
                                 callback(imgInfo);

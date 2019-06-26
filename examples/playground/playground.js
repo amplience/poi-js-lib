@@ -11,12 +11,16 @@
         },
         defaults: {
             account: 'csdemo',
-            imgName: 'cb_d2X2Th_Kids_RWL_BdrmBoy_01_201803',
+            imgName: 'CB_DLP_201903_ColorLP_BlushRomance_Hero',
+            query: '',
             imgClass: 'js-poi-img',
             containerClass: 'js-poi-img-container',
             basePath: 'https://www.crateandbarrel.com/',
             path: 'https://i1.adis.ws/',
-            jsonData: null
+            jsonData: null,
+            canvas: null,
+            layerCommand: null,
+            changeSize: null,
         },
         findPOIClasses: function (imgName) {
             var self = this;
@@ -78,14 +82,17 @@
                 images: [
                     {
                         name: opts.imgName,
-                        data: jsonData ? jsonData : (self.defaults.jsonData || false),
-                        hotspotCallbacks: [
+                        data: jsonData ? jsonData.metadata : (self.defaults.metadata || false),
+                        canvas: jsonData ? jsonData.canvas : (self.defaults.canvas || false),
+                        layerCommand: jsonData ? jsonData.layerCommand : (self.defaults.layerCommand || false),
+                        changeSize: jsonData ? jsonData.changeSize : (self.defaults.changeSize || false),
+                        polygonCallbacks: [
                             {
                                 target: "*",
                                 action: "click",
                                 callback: function (evt, settings) {
                                     window.open(
-                                        opts.basePath + settings.hotspot.target,
+                                        opts.basePath + settings.polygon.target,
                                         '_blank'
                                     )
                                 }
@@ -120,21 +127,39 @@
         },
         getData: function (opts, callback) {
             var self = this;
+            var queryStr = opts.query || '';
+            var query = opts.imgName.includes('?') ? '&X-Amp-Trace=true&v=' + new Date().getTime() : '?' + queryStr + '&X-Amp-Trace=true&v=' + new Date().getTime();
+
             $.ajax({
-                url: (opts.path || 'http://i1.adis.ws/') + 'i/' + opts.account + '/' + opts.imgName + '.js?v=' + new Date().getTime() + '&metadata=true',
-                jsonp: "func",
-                dataType: "jsonp",
+                url: (opts.path || 'http://i1.adis.ws/') + 'i/' + opts.account + '/' + opts.imgName + query,
                 success: function (response) {
-                    var resp = false;
-                    if (!response || !response.metadata || !response.metadata.hotSpots || response.metadata.hotSpots.hotSpots.list.length < 1) {
-                        resp = false;
+                    var translate = response.find(function (el) {
+                        return el.type === 'translate';
+                    });
+                    if (!translate || !translate.data || !translate.data.output || !translate.data.output.layerCommand) {
+                        return false;
+                    }
+                    var metadata = translate.data.output.layerCommand.metadata;
+                    var layerCommand = translate.data.output.layerCommand;
+                    var childlayers = translate.data.output.childlayers;
+                    var canvas = translate.data.output.layerCommand.info.canvas;
+
+                    if (!metadata) {
+                        metadata = childlayers.find(function (el) {
+                            return el.layerCommand.metadata;
+                        });
+
+                        if (metadata && metadata.layerCommand) {
+                            layerCommand = metadata.layerCommand;
+                            metadata = metadata.layerCommand.metadata;
+                        }
                     }
 
-                    else {
-                        resp = response;
-                    }
-
-                    return callback.call(self, resp);
+                    return callback.call(self, {
+                        metadata: metadata,
+                        canvas: canvas,
+                        layerCommand: layerCommand
+                    });
                 },
                 error: function () {
                     return callback.call(self, false);
@@ -180,13 +205,11 @@
             self.getData(settings, function (jsonData) {
                 self.destroyPOI();
 
-                if (!jsonData) {
+                if (!jsonData.metadata) {
                     $panelNav.addClass('with-error');
                     self.reapplyImg(self.defaults);
                     self.initPOI(self.defaults);
-                }
-
-                else {
+                } else {
                     $panelNav.removeClass('with-error');
                     self.reapplyImg(self.defaults, settings);
                     self.initPOI(settings, jsonData);
@@ -279,10 +302,18 @@
             var $codeNav = $('.js_code_nav');
             var $codePanel = $('.js_code_panel');
             var $codeCopyButton = $('.js_copy_clipboard');
-            var $codeTextarea = $('.js_copy_textarea')
+            var $codeTextarea = $('.js_copy_textarea');
 
             self.getData(self.defaults, function (jsonData) {
-                self.defaults.jsonData = jsonData
+                if (jsonData.metadata) {
+                    self.defaults.jsonData = jsonData.metadata;
+                }
+                if (jsonData.canvas) {
+                    self.defaults.canvas = jsonData.canvas;
+                }
+                if (jsonData.layerCommand) {
+                    self.defaults.layerCommand = jsonData.layerCommand;
+                }
                 self.initPOI(self.defaults);
             });
             self.panelInit($panelNav, $panel, $panelButton, $codePanel);
