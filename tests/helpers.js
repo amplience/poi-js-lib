@@ -12,7 +12,7 @@ var TestHelpers = {
     getPointsFromSVG: function(points){
         return points.split(' ');
     },
-    transformAreaPoints: function(points, imgInfo){
+    transformPolygonPoints: function(points, imgInfo){
         var pointsCalc = '';
         points.forEach(function(v){
             pointsCalc += ((imgInfo.dimensions.width * v.x) + ',' + (imgInfo.dimensions.height * v.y) + ' ');
@@ -41,12 +41,12 @@ var TestHelpers = {
             (typeof hotspotData.$image === 'object') &&
             (typeof hotspotData.$parent === 'object') &&
             (typeof hotspotData.$target === 'object') &&
-            (hotspotData.area !== 'undefined') &&
-            (hotspotData.area.selector.length > 0) &&
-            (hotspotData.area.target.length > 0) &&
-            (hotspotData.area.points.length === 4) &&
-            (typeof hotspotData.area.points[0].x === 'number') &&
-            (typeof hotspotData.area.points[0].y === 'number')
+            (hotspotData.polygon !== 'undefined') &&
+            (hotspotData.polygon.selector.length > 0) &&
+            (hotspotData.polygon.target.length > 0) &&
+            (hotspotData.polygon.points.length === 4) &&
+            (typeof hotspotData.polygon.points[0].x === 'number') &&
+            (typeof hotspotData.polygon.points[0].y === 'number')
 
         ) {
             return true;

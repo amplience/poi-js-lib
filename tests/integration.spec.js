@@ -17,7 +17,7 @@ module.exports = {
             .execute('return window.test', [], function (response) {
                 data = response.value.data;
                 hotspot = response.value.hotspot;
-                polygon = response.value.polygon
+                polygon = response.value.polygon;
                 this.assert.ok(deepEqual(data.imgInfo.points, expectedData.points), "Returned POI data equals to expected data");
             })
 
@@ -51,7 +51,7 @@ module.exports = {
                     })
             })
     },
-    'Area of Interest tests': function (browser) {
+    'Polygon tests': function (browser) {
         browser
             .execute([], function (res) {
                 var points = polygon.points;
@@ -59,7 +59,7 @@ module.exports = {
             })
 
             .execute([], function (res) {
-                var transformPoints = helpers.transformAreaPoints(polygon.rawPoints, data.imgInfo).trim();
+                var transformPoints = helpers.transformPolygonPoints(polygon.rawPoints, data.imgInfo).trim();
                 this.assert.ok(polygon.points === transformPoints, "Square is positioned correctly");
             })
 

@@ -279,23 +279,23 @@ window.POI.prototype = {
         }
 
         var hotspots = this.hotspots();
-        var areaInterest = this.areaInterest();
+        var polygons = this.polygons();
         var points = imgInfo.points;
 
         hotspots.removeOthers(imgInfo);
 
         for (var i = points.length - 1; i >= 0; i--) {
-            areaInterest.hideOthers(points[i], imgInfo);
+            polygons.hideOthers(points[i], imgInfo);
 
             if (points[i].points.constructor === Array) {
-                areaInterest.create(points[i], imgInfo);
+                polygons.create(points[i], imgInfo);
             } else {
                 hotspots.create(points[i], imgInfo);
             }
         }
     },
     assignEvents: function ($elem, target, callbacks, params) {
-        //Loop over events callback, defined in params, and assign them to hotspots or area of interest
+        //Loop over events callback, defined in params, and assign them to hotspots or polygons
         if (callbacks && callbacks.length > 0) {
             for (var z = callbacks.length - 1; z >= 0; z--) {
                 (function () {

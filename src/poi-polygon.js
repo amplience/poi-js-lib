@@ -1,6 +1,6 @@
 'use strict';
 
-POI.prototype.areaInterest = function () {
+POI.prototype.polygons = function () {
     var parent = this;
 
     var methods = {
@@ -96,7 +96,7 @@ POI.prototype.areaInterest = function () {
                         $image: imgInfo.$img,
                         $target: $group,
                         $parent: $parent,
-                        area: point,
+                        polygon: point,
                         imgInfo: imgInfo
                     });
                 }
@@ -107,17 +107,17 @@ POI.prototype.areaInterest = function () {
 
         hideOthers: function (point, imgInfo) {
             var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
-            var otherAreas = $parent && $parent.getElementsByTagName('svg');
+            var otherPolygons = $parent && $parent.getElementsByTagName('svg');
 
-            if (!otherAreas || !otherAreas.length) {
+            if (!otherPolygons || !otherPolygons.length) {
                 return false;
             }
 
-            for (var i = otherAreas.length - 1; i >= 0; i--) {
-                if (otherAreas[i].getAttribute('data-name') === imgInfo.name) {
-                    otherAreas[i].style.display = 'block';
+            for (var i = otherPolygons.length - 1; i >= 0; i--) {
+                if (otherPolygons[i].getAttribute('data-name') === imgInfo.name) {
+                    otherPolygons[i].style.display = 'block';
                 } else {
-                    otherAreas[i].style.display = 'none';
+                    otherPolygons[i].style.display = 'none';
                 }
             }
         }

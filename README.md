@@ -55,7 +55,7 @@ POI.init({
                                     console.log('generic click', settings);
                                 },
                                 initCallback: function (settings) {
-                                    console.log('init callback area', settings);
+                                    console.log('init callback polygon', settings);
                                 }
                             }
                         ]
@@ -111,7 +111,7 @@ In the example above this param is commented out for demonstration purposes
 Also you can specify breakpoints array for picture images, each breakpoint object should contain image name, minWidth and maxWidth, also you can specify polygonCallbacks and hotspotCallbacks for each breakpoint separately.
 In other case polygonCallbacks and hotspotCallbacks will be inherited from it's main image.
 
-Also there is simple way to render hotspots and areas for all images. For this specify image name as * and target of callbacks as *, too.
+Also there is simple way to render hotspots and polygons for all images. For this specify image name as * and target of callbacks as *, too.
 Images configuration with specified names (not *) will be more priorited.
 
 
@@ -133,7 +133,7 @@ hotspotCallbacks:[
 
 ```
 
-### Event handlers example attached to area of interest ###
+### Event handlers example attached to polygon ###
 
 
 
@@ -151,7 +151,7 @@ polygonCallbacks:[
 
 ```
 
-### Specifying universal callback for every hotspot\area of interest
+### Specifying universal callback for every hotspot\polygon
 
 
 
@@ -166,7 +166,7 @@ hotspotCallbacks:[
     
             },
             initCallback: function(settings){
-                console.log('init callback area', settings);
+                console.log('init callback polygon', settings);
             }
     }
 ]
