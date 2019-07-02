@@ -188,3 +188,5 @@ Open new terminal window and run ```npm run test```
 
 ### License ###
 This software is provided under Apache License, Version 2.0. More details in ```README.md```
+
+layer0=[scaleFit=poi&poi={$this.metadata.pointOfInterest.x},{$this.metadata.pointOfInterest.y},{$this.metadata.pointOfInterest.w},{$this.metadata.pointOfInterest.h}&sm=c&aspect=1:1&w={$this.image.height>768?768:$this.image.height}&h={$this.image.height>768?768:$this.image.height}]
