@@ -216,9 +216,14 @@
                 }
             });
         },
-        panelInit: function ($panelNav, $panel, $panelButton, $panneltoHide) {
+        panelInit: function ($panelNav, $panel, $panelButton, $panneltoHide, $panelDocs, $panelDocsContainer) {
             var self = this;
             self.panelToggle($panelNav, $panel, function () {
+                $panneltoHide.hide();
+                $panelDocsContainer.hide();
+            });
+
+            self.panelToggle($panelDocs, $panelDocsContainer, function () {
                 $panneltoHide.hide();
             });
 
@@ -284,11 +289,12 @@
                 document.execCommand('copy');
             });
         },
-        codeCopyInit: function ($codeNav, $codePanel, $codeCopyButton, $textarea, $panelToHide) {
+        codeCopyInit: function ($codeNav, $codePanel, $codeCopyButton, $textarea, $panelToHide, $panelDocsContainer) {
             var self = this;
 
             self.panelToggle($codeNav, $codePanel, function () {
                 $panelToHide.hide();
+                $panelDocsContainer.hide();
                 self.constructCopyCode($textarea)
             });
             self.copyToClipboard($codeCopyButton, $textarea);
@@ -298,11 +304,13 @@
             var $panelNav = $('.js_panel_nav');
             var $panel = $('.js_panel');
             var $panelButton = $('.js_panel_submit');
+            var $panelDocs = $('.js_docs');
 
             var $codeNav = $('.js_code_nav');
             var $codePanel = $('.js_code_panel');
             var $codeCopyButton = $('.js_copy_clipboard');
             var $codeTextarea = $('.js_copy_textarea');
+            var $panelDocsContainer = $('.code-docs-panel');
 
             self.getData(self.defaults, function (jsonData) {
                 if (jsonData.metadata) {
@@ -316,8 +324,8 @@
                 }
                 self.initPOI(self.defaults);
             });
-            self.panelInit($panelNav, $panel, $panelButton, $codePanel);
-            self.codeCopyInit($codeNav, $codePanel, $codeCopyButton, $codeTextarea, $panel);
+            self.panelInit($panelNav, $panel, $panelButton, $codePanel, $panelDocs, $panelDocsContainer);
+            self.codeCopyInit($codeNav, $codePanel, $codeCopyButton, $codeTextarea, $panel, $panelDocsContainer);
         }
     }
 }(jQuery));
