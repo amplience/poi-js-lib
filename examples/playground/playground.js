@@ -225,6 +225,7 @@
 
             self.panelToggle($panelDocs, $panelDocsContainer, function () {
                 $panneltoHide.hide();
+                $panel.hide();
             });
 
             $panelButton.click(function (e) {
