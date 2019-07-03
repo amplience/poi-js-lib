@@ -12,7 +12,6 @@
         defaults: {
             account: 'csdemo',
             imgName: 'CB_DLP_201903_ColorLP_BlushRomance_Hero',
-            query: '',
             imgClass: 'js-poi-img',
             containerClass: 'js-poi-img-container',
             basePath: 'https://www.crateandbarrel.com/',
@@ -118,12 +117,45 @@
             poi.init();
         },
         destroyPOI: function () {
-            $('.js-img-container').empty();
+            $('.js-img-container').find('svg').each(function () {
+                $(this).remove();
+            })
         },
         reapplyImg: function (defaults, opts) {
-            $('.js-img-container').append('<img src="' + defaults.path + 'i/' +
+            var $sources = document.getElementsByTagName('source');
+            var $img = document.getElementsByTagName('img');
+            $sources = Array.from($sources);
+
+            $sources = $sources.concat($img && $img[0]);
+
+            $img && $img[0] && $img[0].setAttribute('src', defaults.path + 'i/' +
                 (opts ? opts.account : defaults.account) + '/' +
-                (opts ? opts.imgName : defaults.imgName) + '" />');
+                (opts ? opts.imgName : defaults.imgName));
+
+            $sources.forEach(function (el) {
+                var set = el && el.getAttribute('srcset');
+                set = set.split(',');
+
+                set = set.map(function (el) {
+                    var paths = el.split('?');
+
+                    paths[0] = defaults.path + 'i/' +
+                        (opts ? opts.account : defaults.account) + '/' +
+                        (opts ? opts.imgName : defaults.imgName);
+
+                    if (paths[1]) {
+                        paths[1] = paths[1].replace(defaults.imgName, opts.imgName)
+                    }
+
+                    el = paths.join('?');
+
+                    return el;
+                });
+
+                set = set.join(', ');
+
+                el.setAttribute('srcset', set)
+            });
         },
         getData: function (opts, callback) {
             var self = this;
@@ -202,19 +234,14 @@
                 return false;
             }
 
-            self.getData(settings, function (jsonData) {
-                self.destroyPOI();
+            //self.getData(settings, function (jsonData) {
+            self.destroyPOI();
+            $panelNav.removeClass('with-error');
+            self.reapplyImg(self.defaults, settings);
+            self.initPOI(settings);
 
-                if (!jsonData.metadata) {
-                    $panelNav.addClass('with-error');
-                    self.reapplyImg(self.defaults);
-                    self.initPOI(self.defaults);
-                } else {
-                    $panelNav.removeClass('with-error');
-                    self.reapplyImg(self.defaults, settings);
-                    self.initPOI(settings, jsonData);
-                }
-            });
+            Object.assign(self.defaults, settings)
+            // });
         },
         panelInit: function ($panelNav, $panel, $panelButton, $panneltoHide, $panelDocs, $panelDocsContainer) {
             var self = this;
@@ -237,9 +264,9 @@
         appendScriptStyles: function (callback) {
             var self = this;
 
-            var style = document.createElement("link")
-            style.setAttribute("rel", "stylesheet")
-            style.setAttribute("type", "text/css")
+            var style = document.createElement("link");
+            style.setAttribute("rel", "stylesheet");
+            style.setAttribute("type", "text/css");
             style.setAttribute("href", self.defaults.poiCssSrc);
             document.head.appendChild(style);
 
@@ -313,18 +340,20 @@
             var $codeTextarea = $('.js_copy_textarea');
             var $panelDocsContainer = $('.code-docs-panel');
 
-            self.getData(self.defaults, function (jsonData) {
-                if (jsonData.metadata) {
-                    self.defaults.jsonData = jsonData.metadata;
-                }
-                if (jsonData.canvas) {
-                    self.defaults.canvas = jsonData.canvas;
-                }
-                if (jsonData.layerCommand) {
-                    self.defaults.layerCommand = jsonData.layerCommand;
-                }
-                self.initPOI(self.defaults);
-            });
+            self.initPOI(self.defaults);
+
+            /* self.getData(self.defaults, function (jsonData) {
+                 if (jsonData.metadata) {
+                     self.defaults.jsonData = jsonData.metadata;
+                 }
+                 if (jsonData.canvas) {
+                     self.defaults.canvas = jsonData.canvas;
+                 }
+                 if (jsonData.layerCommand) {
+                     self.defaults.layerCommand = jsonData.layerCommand;
+                 }
+                 self.initPOI(self.defaults);
+             });*/
             self.panelInit($panelNav, $panel, $panelButton, $codePanel, $panelDocs, $panelDocsContainer);
             self.codeCopyInit($codeNav, $codePanel, $codeCopyButton, $codeTextarea, $panel, $panelDocsContainer);
         }

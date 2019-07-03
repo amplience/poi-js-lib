@@ -258,7 +258,7 @@ window.POI.prototype = {
         var imgInfo;
 
         if (points !== null) {
-            var $img = self.findImg(params.img, self.params);
+            var $img = self.findImg(params.img);
 
             imgInfo = {
                 dimensions: {
@@ -272,10 +272,11 @@ window.POI.prototype = {
                 data: params.img,
                 name: params.img.name,
                 points: points,
+                breakpoints: params.breakpoints,
                 svg: null
             };
             self.images.push(imgInfo);
-            self.namedImagesData[params.img.name] = imgInfo;
+            self.namedImagesData[params.img.name + '?' + params.img.query] = imgInfo;
         }
 
         self.imgsLoaded += 1;
@@ -306,23 +307,26 @@ window.POI.prototype = {
                     var layerCommand = translate.data.output.layerCommand;
                     var childlayers = translate.data.output.childlayers;
                     var canvas = translate.data.output.layerCommand.info.canvas;
+                    var childLayerMeta;
 
-                    if (!metadata) {
-                        metadata = childlayers.find(function (el) {
-                            return el.layerCommand.metadata;
-                        });
 
-                        if (metadata && metadata.layerCommand) {
-                            layerCommand = metadata.layerCommand;
-                            metadata = metadata.layerCommand.metadata;
-                        }
+                    childLayerMeta = childlayers.find(function (el) {
+                        return el.layerCommand.metadata;
+                    });
+
+                    if (childLayerMeta && childLayerMeta.layerCommand) {
+                        layerCommand = childLayerMeta.layerCommand;
+                        metadata = childLayerMeta.layerCommand.metadata;
+                        canvas = childLayerMeta.layerCommand.info.canvas;
                     }
+
                     self.generateData({
                         data: metadata,
                         layerCommand: layerCommand,
                         canvas: canvas,
                         changeSize: queryStr.includes('crop') || imgObject.name.includes('crop'),
                         img: imgObject,
+                        breakpoints: imgObject.breakpoints,
                         callback: function (imgInfo) {
                             callback(imgInfo);
                         }
@@ -374,8 +378,8 @@ window.POI.prototype = {
                                         callback(imgInfo);
                                     }
                                 });
-                            } else if (imgObject && self.namedImagesData[imgObject.name]) {
-                                callback(self.namedImagesData[imgObject.name]);
+                            } else if (imgObject && self.namedImagesData[imgObject.name + '?' + imgObject.query]) {
+                                callback(self.namedImagesData[imgObject.name + '?' + imgObject.query]);
                             } else {
                                 //Calls Ajax for each image, and executes callback for each found hotspots
                                 getInfo(imgObject)
@@ -383,61 +387,115 @@ window.POI.prototype = {
                         })()
                     }
                 } else {
-                    if (imgs[i].breakpoints) {
-                        img = imgs[i].breakpoints.find(function (el) {
-                            var min = el.minWidth || 0;
-                            var max = el.maxWidth || 2000;
-                            return min <= windowSize && max >= windowSize;
+                    var breakpoints = [];
+                    var retina = false;
+                    var withoutQuery;
+                    var nameParsed;
+
+                    if (window.devicePixelRatio > 1) {
+                        retina = true;
+                    }
+
+                    for (var k = $sources.length - 1; k >= 0; k--) {
+                        var src = $sources[k].getAttribute('srcset');
+                        var nodeSize = $sources[k].getAttribute('media');
+                        var srcArray = src.split(',');
+                        var x1;
+                        var x2;
+                        var query;
+
+                        srcArray = srcArray.map(Function.prototype.call, String.prototype.trim);
+
+                        srcArray.forEach(function (el) {
+                            if (el.includes('1x')) {
+                                x1 = el;
+                            } else if (el.includes('2x')) {
+                                x2 = el;
+                            } else {
+                                x1 = el;
+                            }
                         });
 
-                        if (img && !img.polygonCallbacks) {
-                            img.polygonCallbacks = imgs[i].polygonCallbacks;
+                        if (retina && x2) {
+                            src = x2;
+                        } else if (x1) {
+                            src = x1;
                         }
 
-                        if (img && !img.hotspotCallbacks) {
-                            img.hotspotCallbacks = imgs[i].hotspotCallbacks;
-                        }
+                        withoutQuery = src.split('?');
+
+                        nameParsed = withoutQuery[0].split('/');
+                        query = withoutQuery[1] || '';
+                        nameParsed = nameParsed[nameParsed.length - 1];
+
+                        nodeSize = nodeSize.split('and');
+
+                        nodeSize = nodeSize.map(Function.prototype.call, String.prototype.trim);
+
+                        var resultObj = {
+                            polygonCallbacks: img.polygonCallbacks,
+                            hotspotCallbacks: img.hotspotCallbacks,
+                            name: nameParsed,
+                            query: query,
+                        };
+
+                        nodeSize = nodeSize.map(function (el) {
+                            el = el.replace('(', '');
+                            el = el.replace(')', '');
+                            el = el.split(':');
+                            el = el.map(Function.prototype.call, String.prototype.trim);
+
+                            var key = el[0] && el[0] === 'max-width' ? 'maxWidth' : 'minWidth';
+                            var value = el[1] ? parseInt(el[1].replace('px', ''), 10) : key === 'minWidth' ? 0 : '';
+
+                            resultObj[key] = value;
+
+                            return resultObj;
+                        });
+
+                        breakpoints.push(resultObj);
                     }
-                    if (!img.query) {
-                        var query;
-                        var withoutQuery;
-                        var nameParsed;
 
-                        for (var k = $imgs.length - 1; k >= 0; k--) {
-                            var srcParsed = $imgs[k].getAttribute('src');
-                            withoutQuery = srcParsed.split('?');
+                    var imgObj = breakpoints.find(function (el) {
+                        var min = el.minWidth || 0;
+                        var max = el.maxWidth || 2000;
+                        return min <= windowSize && max >= windowSize;
+                    });
 
-                            nameParsed = withoutQuery[0].split('/');
-                            nameParsed = nameParsed[nameParsed.length - 1];
+                    if (imgObj) {
+                        img = imgObj;
+                        img.breakpoints = breakpoints;
+                    } else {
+                        var $img = self.findImg(img);
 
-                            if (nameParsed.includes(img.name) && withoutQuery.length > 1) {
-                                query = withoutQuery[withoutQuery.length - 1];
+                        src = $img.getAttribute('srcset');
+                        srcArray = src.split(',');
 
-                                if (query && nameParsed === img.name) {
-                                    img.query = query;
-                                }
+                        srcArray = srcArray.map(Function.prototype.call, String.prototype.trim);
+
+                        srcArray.forEach(function (el) {
+                            if (el.includes('1x')) {
+                                x1 = el;
+                            } else if (el.includes('2x')) {
+                                x2 = el;
+                            } else {
+                                x1 = el;
                             }
+                        });
 
+                        if (retina && x2) {
+                            src = x2;
+                        } else if (x1) {
+                            src = x1;
                         }
 
-                        for (var k = $sources.length - 1; k >= 0; k--) {
-                            var src = $sources[k].getAttribute('srcset');
-                            withoutQuery = src.split('?');
+                        withoutQuery = src.split('?');
 
-                            nameParsed = withoutQuery[0].split('/');
-                            nameParsed = nameParsed[nameParsed.length - 1];
+                        query = withoutQuery[1] || '';
 
-                            if (nameParsed.includes(img.name) && withoutQuery.length > 1) {
-                                query = withoutQuery[withoutQuery.length - 1];
-
-                                if (query && nameParsed === img.name) {
-                                    img.query = query;
-                                }
-                            }
-
-                        }
-
+                        img.query = query;
                     }
+
                     if (img && img.data) {
                         self.generateData({
                             data: img.data,
@@ -449,8 +507,8 @@ window.POI.prototype = {
                                 callback(imgInfo);
                             }
                         });
-                    } else if (img && self.namedImagesData[img.name]) {
-                        callback(self.namedImagesData[img.name]);
+                    } else if (img && self.namedImagesData[img.name + '?' + img.query]) {
+                        callback(self.namedImagesData[img.name + '?' + img.query]);
                     } else {
                         //Calls Ajax for each image, and executes callback for each found hotspots
                         getInfo(img)
@@ -580,7 +638,7 @@ window.POI.prototype = {
     },
 
     checkResizeSubscription: function () {
-        var imgs = this.params.images;
+        var imgs = this.images;
         var needResizeSubscription = false;
         var resizeTimer;
         var self = this;
@@ -610,9 +668,9 @@ window.POI.prototype = {
 
     init: function () {
         var self = this;
-        this.checkResizeSubscription();
         this.getImgData(function (imgInfo) {
             self.iteratePoints(imgInfo);
+            self.checkResizeSubscription();
         });
     }
 };
@@ -869,7 +927,7 @@ POI.prototype.polygons = function () {
             if (!imgInfo.svg) {
                 $svg = document.createElementNS(svgNS, 'svg');
                 $svg.setAttributeNS(null, 'viewBox', '0 0 ' + (canvasW || imgInfo.dimensions.width) + ' ' + (canvasH || imgInfo.dimensions.height));
-                $svg.setAttributeNS(null, 'data-name', imgInfo.name);
+                $svg.setAttributeNS(null, 'data-name', imgInfo.name + '?' + imgInfo.data.query);
                 $parent.appendChild($svg);
                 imgInfo.svg = $svg;
             } else {
@@ -906,9 +964,9 @@ POI.prototype.polygons = function () {
                         y = Math.abs(canvasY - y);
                     }
 
-                    if (x > canvasW || x > imgInfo.dimensions.width || y > canvasH || y > imgInfo.dimensions.height) {
+                    /*if (x > canvasW || x > imgInfo.dimensions.width || y > canvasH || y > imgInfo.dimensions.height) {
                         needRender = false;
-                    }
+                    }*/
 
                     pointsCalc += (x + ',' + y + ' ');
                 });
@@ -944,7 +1002,7 @@ POI.prototype.polygons = function () {
             }
 
             for (var i = otherPolygons.length - 1; i >= 0; i--) {
-                if (otherPolygons[i].getAttribute('data-name') === imgInfo.name) {
+                if (otherPolygons[i].getAttribute('data-name') === imgInfo.name + '?' + imgInfo.data.query) {
                     otherPolygons[i].style.display = 'block';
                 } else {
                     otherPolygons[i].style.display = 'none';

@@ -39,7 +39,7 @@ POI.prototype.polygons = function () {
             if (!imgInfo.svg) {
                 $svg = document.createElementNS(svgNS, 'svg');
                 $svg.setAttributeNS(null, 'viewBox', '0 0 ' + (canvasW || imgInfo.dimensions.width) + ' ' + (canvasH || imgInfo.dimensions.height));
-                $svg.setAttributeNS(null, 'data-name', imgInfo.name);
+                $svg.setAttributeNS(null, 'data-name', imgInfo.name + '?' + imgInfo.data.query);
                 $parent.appendChild($svg);
                 imgInfo.svg = $svg;
             } else {
@@ -76,9 +76,9 @@ POI.prototype.polygons = function () {
                         y = Math.abs(canvasY - y);
                     }
 
-                    if (x > canvasW || x > imgInfo.dimensions.width || y > canvasH || y > imgInfo.dimensions.height) {
+                    /*if (x > canvasW || x > imgInfo.dimensions.width || y > canvasH || y > imgInfo.dimensions.height) {
                         needRender = false;
-                    }
+                    }*/
 
                     pointsCalc += (x + ',' + y + ' ');
                 });
@@ -114,7 +114,7 @@ POI.prototype.polygons = function () {
             }
 
             for (var i = otherPolygons.length - 1; i >= 0; i--) {
-                if (otherPolygons[i].getAttribute('data-name') === imgInfo.name) {
+                if (otherPolygons[i].getAttribute('data-name') === imgInfo.name + '?' + imgInfo.data.query) {
                     otherPolygons[i].style.display = 'block';
                 } else {
                     otherPolygons[i].style.display = 'none';

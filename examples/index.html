@@ -73,11 +73,12 @@
     <picture>
         <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=768 1x, //i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=1046 2x"
                 type="image/webp"
-                media="(max-width: 768px)">
+                media="(max-width: 768px) and (min-width: 0px)">
         <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=768 1x, //i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=1046 2x"
-                media="(max-width: 768px)">
+                media="(max-width: 768px) and (min-width: 0px)">
         <img class="js-poi-img another class"
-             src="//i1-qa.adis.ws/i/tesco/100023354_JJ?w=1024$banner-poi$&layer0=[src=/i//100023354_JJ] 1x, //i1-qa.adis.ws/i/tesco/100023354_JJ?w=2048$banner-poi$&layer0=[src=/i//100023354_JJ] 2x">
+             src="//i1-qa.adis.ws/i/tesco/100023354_JJ"
+             srcset="//i1-qa.adis.ws/i/tesco/100023354_JJ?w=1024$banner-poi$&layer0=[src=/i//100023354_JJ] 1x, //i1-qa.adis.ws/i/tesco/100023354_JJ?w=2048$banner-poi$&layer0=[src=/i//100023354_JJ] 2x">
     </picture>
 </div>
 <!--<div class="img-container">
@@ -95,70 +96,46 @@
         containerClass: 'img-container',
         imgClass: 'js-poi-img',
         images: [
-            {
-                name: '*',
-                polygonCallbacks: [
-                    {
-                        target: "*",
-                        action: "click",
-                        callback: function (evt, settings) {
-                            console.log('generic click', settings);
+            /*  {
+                  name: '*',
+                  polygonCallbacks: [
+                      {
+                          target: "*",
+                          action: "click",
+                          callback: function (evt, settings) {
+                              console.log('generic click', settings);
 
-                        },
-                        initCallback: function (settings) {
-                            console.log('init callback polygon', settings);
-                        }
-                    }
-                ],
-                hotspotCallbacks: [
-                    {
-                        target: "*",
-                        action: "click",
-                        callback: function (evt, settings) {
-                            console.log('yay, i was clicked :)', settings);
-                        },
-                        initCallback: function (settings) {
-                            console.log('init callback hotspot', settings);
-                        }
-                    },
-                    {
-                        target: "*",
-                        action: "mouseover",
-                        callback: function (evt, settings) {
-                            console.log('yay, i was hovered :)', settings);
-                        },
-                        initCallback: function (settings) {
-                            console.log('init callback hotspot', settings);
-                        }
-                    }
-                ]
-            },
+                          },
+                          initCallback: function (settings) {
+                              console.log('init callback polygon', settings);
+                          }
+                      }
+                  ],
+                  hotspotCallbacks: [
+                      {
+                          target: "*",
+                          action: "click",
+                          callback: function (evt, settings) {
+                              console.log('yay, i was clicked :)', settings);
+                          },
+                          initCallback: function (settings) {
+                              console.log('init callback hotspot', settings);
+                          }
+                      },
+                      {
+                          target: "*",
+                          action: "mouseover",
+                          callback: function (evt, settings) {
+                              console.log('yay, i was hovered :)', settings);
+                          },
+                          initCallback: function (settings) {
+                              console.log('init callback hotspot', settings);
+                          }
+                      }
+                  ]
+              },*/
             {
                 name: "100023354_JJ",
-                breakpoints: [
-                    {
-                        name: "100023354_JJ",
-                        minWidth: 769
-                    },
-                    {
-                        name: "1-shutterstock_588634790-825x465",
-                        minWidth: 0,
-                        maxWidth: 768,
-                        hotspotCallbacks: [
-                            {
-                                target: "hair",
-                                action: "click",
-                                callback: function (evt, settings) {
-                                    console.log('generic click 1-shutterstock_588634790-825x465', settings);
-
-                                },
-                                initCallback: function (settings) {
-                                    console.log('init callback polygon 1-shutterstock_588634790-825x465', settings);
-                                }
-                            }
-                        ]
-                    }
-                ],
                 polygonCallbacks: [
                     {
                         target: "*",
@@ -185,7 +162,7 @@
                         }
                     }
                 ]
-            },
+            }/*,
             {
                 name: "blue-and-pink",
                 hotspotCallbacks: [
@@ -230,7 +207,7 @@
                         }
                     }
                 ]
-            },
+            },*/
         ]
     });
     poi.init();
