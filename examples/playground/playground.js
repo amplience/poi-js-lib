@@ -353,6 +353,7 @@
             $panelCancelButton.on('click', function (e) {
                 e.preventDefault();
                 $panel.toggle();
+                $panelNav.removeClass('active');
             });
 
             /* self.getData(self.defaults, function (jsonData) {
