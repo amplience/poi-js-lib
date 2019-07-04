@@ -73,7 +73,6 @@ window.POI.prototype = {
                     if (childLayerMeta && childLayerMeta.layerCommand) {
                         layerCommand = childLayerMeta.layerCommand;
                         metadata = childLayerMeta.layerCommand.metadata;
-                        canvas = childLayerMeta.layerCommand.info.canvas;
                     }
 
                     self.generateData({

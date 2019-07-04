@@ -205,6 +205,7 @@
             $panelNav.click(function (e) {
                 e.preventDefault();
                 $panel.toggle();
+                $panelNav.toggleClass('active');
 
                 if (typeof callback === 'function') {
                     callback.call(self);
@@ -243,16 +244,20 @@
             Object.assign(self.defaults, settings)
             // });
         },
-        panelInit: function ($panelNav, $panel, $panelButton, $panneltoHide, $panelDocs, $panelDocsContainer) {
+        panelInit: function ($panelNav, $panel, $panelButton, $panneltoHide, $panelDocs, $panelDocsContainer, $codeNav) {
             var self = this;
             self.panelToggle($panelNav, $panel, function () {
                 $panneltoHide.hide();
                 $panelDocsContainer.hide();
+                $panelDocs.removeClass('active');
+                $codeNav.removeClass('active');
             });
 
             self.panelToggle($panelDocs, $panelDocsContainer, function () {
                 $panneltoHide.hide();
                 $panel.hide();
+                $panelNav.removeClass('active');
+                $codeNav.removeClass('active');
             });
 
             $panelButton.click(function (e) {
@@ -317,12 +322,14 @@
                 document.execCommand('copy');
             });
         },
-        codeCopyInit: function ($codeNav, $codePanel, $codeCopyButton, $textarea, $panelToHide, $panelDocsContainer) {
+        codeCopyInit: function ($codeNav, $codePanel, $codeCopyButton, $textarea, $panelToHide, $panelDocsContainer, $panelDocs, $panelNav) {
             var self = this;
 
             self.panelToggle($codeNav, $codePanel, function () {
                 $panelToHide.hide();
                 $panelDocsContainer.hide();
+                $panelDocs.removeClass('active');
+                $panelNav.removeClass('active');
                 self.constructCopyCode($textarea)
             });
             self.copyToClipboard($codeCopyButton, $textarea);
@@ -332,6 +339,7 @@
             var $panelNav = $('.js_panel_nav');
             var $panel = $('.js_panel');
             var $panelButton = $('.js_panel_submit');
+            var $panelCancelButton = $('.js_panel_submit_cancel');
             var $panelDocs = $('.js_docs');
 
             var $codeNav = $('.js_code_nav');
@@ -341,6 +349,11 @@
             var $panelDocsContainer = $('.code-docs-panel');
 
             self.initPOI(self.defaults);
+
+            $panelCancelButton.on('click', function (e) {
+                e.preventDefault();
+                $panel.toggle();
+            });
 
             /* self.getData(self.defaults, function (jsonData) {
                  if (jsonData.metadata) {
@@ -354,8 +367,8 @@
                  }
                  self.initPOI(self.defaults);
              });*/
-            self.panelInit($panelNav, $panel, $panelButton, $codePanel, $panelDocs, $panelDocsContainer);
-            self.codeCopyInit($codeNav, $codePanel, $codeCopyButton, $codeTextarea, $panel, $panelDocsContainer);
+            self.panelInit($panelNav, $panel, $panelButton, $codePanel, $panelDocs, $panelDocsContainer, $codeNav);
+            self.codeCopyInit($codeNav, $codePanel, $codeCopyButton, $codeTextarea, $panel, $panelDocsContainer, $panelDocs, $panelNav);
         }
     }
 }(jQuery));

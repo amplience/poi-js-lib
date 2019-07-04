@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
+    <link rel="stylesheet" href="./colorpicker/tinycolorpicker.css" type="text/css" media="screen"/>
     <link rel="stylesheet" type="text/css" href="css/poi.css"/>
     <link rel="stylesheet" type="text/css" href="playground.css"/>
     <meta name="viewport" content="width=device-width">
+    <script src="./colorpicker/tinycolorpicker.min.js"></script>
 </head>
 
 <body>
@@ -28,12 +31,25 @@
                     media="(min-width: 1024px)">
             <source srcset="//i1.adis.ws/i/csdemo/CB_DLP_201903_ColorLP_BlushRomance_Hero?w=1280&upscale=true 1x, //i1.adis.ws/i/csdemo/CB_DLP_201903_ColorLP_BlushRomance_Hero?w=2560&upscale=true 2x"
                     media="(min-width: 1024px)">-->
-            <img src="//i1.adis.ws/i/csdemo/CB_DLP_201903_ColorLP_BlushRomance_Hero" srcset="//i1.adis.ws/i/csdemo/CB_DLP_201903_ColorLP_BlushRomance_Hero?w=1280&upscale=true 1x, //i1.adis.ws/i/csdemo/CB_DLP_201903_ColorLP_BlushRomance_Hero?w=2560&upscale=true 2x"
+            <img src="//i1.adis.ws/i/csdemo/CB_DLP_201903_ColorLP_BlushRomance_Hero"
+                 srcset="//i1.adis.ws/i/csdemo/CB_DLP_201903_ColorLP_BlushRomance_Hero?w=1280&upscale=true 1x, //i1.adis.ws/i/csdemo/CB_DLP_201903_ColorLP_BlushRomance_Hero?w=2560&upscale=true 2x"
                  alt="">
         </picture>
     </div>
 </div>
 
+<div class="colorPicker">
+    <div id="colorPicker">
+        <a class="color">
+            <div class="colorInner"></div>
+        </a>
+        <div class="track"></div>
+        <ul class="dropdown">
+            <li></li>
+        </ul>
+        <input type="hidden" class="colorInput"/>
+    </div>
+</div>
 <div class="js_panel_nav switcher-panel-nav">
     <?xml version="1.0" encoding="iso-8859-1"?>
     <!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -91,19 +107,21 @@
 </svg>
 </div>
 <div class="js_docs code-docs">
-    <?xml version="1.0" encoding="utf-8"?>
-    <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="128px" height="128px" viewBox="0 0 128 128" enable-background="new 0 0 128 128" xml:space="preserve">
+    <?xml version="1.0" encoding="iso-8859-1"?>
+    <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
 <g>
 	<g>
-		<path d="M8,112V16c0-4.414,3.594-8,8-8h80c4.414,0,8,3.586,8,8v47.031l8-8V16c0-8.836-7.164-16-16-16H16C7.164,0,0,7.164,0,16v96
-			c0,8.836,7.164,16,16,16h44v-8H16C11.594,120,8,116.414,8,112z M88,24H24v8h64V24z M88,40H24v8h64V40z M88,56H24v8h64V56z M24,80
-			h32v-8H24V80z M125.656,72L120,66.344c-1.563-1.563-3.609-2.344-5.656-2.344s-4.094,0.781-5.656,2.344l-34.344,34.344
-			C72.781,102.25,68,108.293,68,110.34L64,128l17.656-4c0,0,8.094-4.781,9.656-6.344l34.344-34.344
-			C128.781,80.188,128.781,75.121,125.656,72z M88.492,114.82c-0.453,0.43-2.02,1.488-3.934,2.707l-10.363-10.363
-			c1.063-1.457,2.246-2.922,2.977-3.648l25.859-25.859l11.313,11.313L88.492,114.82z"/>
+		<g>
+			<circle cx="256" cy="378.5" r="25"/>
+			<path d="M256,0C114.516,0,0,114.497,0,256c0,141.484,114.497,256,256,256c141.484,0,256-114.497,256-256
+				C512,114.516,397.503,0,256,0z M256,472c-119.377,0-216-96.607-216-216c0-119.377,96.607-216,216-216
+				c119.377,0,216,96.607,216,216C472,375.377,375.393,472,256,472z"/>
+			<path d="M256,128.5c-44.112,0-80,35.888-80,80c0,11.046,8.954,20,20,20s20-8.954,20-20c0-22.056,17.944-40,40-40
+				c22.056,0,40,17.944,40,40c0,22.056-17.944,40-40,40c-11.046,0-20,8.954-20,20v50c0,11.046,8.954,20,20,20
+				c11.046,0,20-8.954,20-20v-32.531c34.466-8.903,60-40.26,60-77.469C336,164.388,300.112,128.5,256,128.5z"/>
+		</g>
 	</g>
 </g>
 </svg>
@@ -111,7 +129,7 @@
 </div>
 <div class="js_code_panel switcher-panel">
     <div class="input-wrapper">
-        <label for="account_input">Code</label>
+        <h2 class="panel-header">Code</h2>
         <textarea name="" id="" cols="30" rows="10" class="js_copy_textarea"></textarea>
     </div>
 
@@ -120,25 +138,29 @@
 
 <div class="js_panel switcher-panel">
     <div class="input-wrapper">
+        <h2 class="panel-header">Settings</h2>
+        <div class="note-txt">
+            This tool will work best if the image has its own, separate container
+        </div>
+    </div>
+    <div class="input-wrapper">
         <label for="account_input">Account short name</label>
         <input type="text" name="account" placeholder="csdemo" id="account_input" value="csdemo">
     </div>
 
     <div class="input-wrapper">
         <label for="imgName_input">Image name</label>
-        <input type="text" name="imgName" placeholder="cb_d2X2Th_Kids_RWL_BdrmBoy_01_201803" id="imgName_input" value="blue-and-pink">
+        <input type="text" name="imgName" placeholder="cb_d2X2Th_Kids_RWL_BdrmBoy_01_201803" id="imgName_input"
+               value="blue-and-pink">
     </div>
 
     <div class="input-wrapper">
         <label for="base_path">Product base path</label>
-        <input type="text" name="basePath" placeholder="https://www.crateandbarrel.com/" id="base_path" value="https://www.crateandbarrel.com/">
-    </div>
-    <div class="input-wrapper">
-        <div class="note-txt">
-            * This tool will work best if the image has its own, separate container
-        </div>
+        <input type="text" name="basePath" placeholder="https://www.crateandbarrel.com/" id="base_path"
+               value="https://www.crateandbarrel.com/">
     </div>
     <input type="button" value="Create" class="js_panel_submit">
+    <input type="button" value="Cancel" class="js_panel_submit_cancel cancel-btn">
 </div>
 <div class="switcher-panel code-docs-panel">
     here will be docs
@@ -148,8 +170,25 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="playground.js"></script>
 
-<script>
+<script type="text/javascript">
     window.POIGenerator.initAll();
+    window.onload = function () {
+        // The plain javascript api is very similar to the jquery version with some exceptions.
+        // There is no chaining like in the jquery api. So when you create a instance it
+        // will return all methods and properties.
+        //
+        var $picker = document.getElementById("colorPicker");
+        var picker = tinycolorpicker($picker);
+        picker.setColor('#ececec');
+
+        $picker.addEventListener("change", function () {
+            var color = $picker.querySelector('.colorInput').getAttribute('value');
+
+            Array.from(document.getElementsByTagName('polygon')).forEach(function (el) {
+                el.style.stroke = color;
+            })
+        });
+    }
 </script>
 
 </body>

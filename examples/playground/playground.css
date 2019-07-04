@@ -1,6 +1,7 @@
 html, body {
     height: 100%;
     min-height: 100%;
+    font-family: Roboto, Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -12,31 +13,31 @@ body {
 
 .switcher-panel {
     position: fixed;
-    bottom: 45px;
-    left: 15px;
-    padding: 15px;
+    bottom: 0;
+    left: 0;
+    padding: 25px;
     width: 400px;
+    height: 350px;
     min-height: 192px;
-    background-color: #efefef;
-    padding-bottom: 10px;
+    background-color: #fff;
+    opacity: 0.95;
     display: none;
     z-index: 3;
 }
 
 .input-wrapper {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
-.input-wrapper > label {
+.js_panel .input-wrapper > label {
     display: block;
-    font-size: 14px;
-    Font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
 }
 
 .input-wrapper > input[type="text"] {
     font-size: 14px;
     width: 100%;
-    padding: 3px 5px;
+    padding: 5px;
     display: block;
     text-indent: 3px;
     box-sizing: border-box;
@@ -57,55 +58,60 @@ body {
 }
 
 .input-wrapper > textarea {
-    margin: 0;
     font-size: 12px;
-    padding: 3px 5px;
+    padding: 5px;
     display: block;
-    margin-top: 2px;
+    margin: 0;
     border: 1px solid #bcbcbc;
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     width: 100%;
-    height: 131px;
+    height: 226px;
     resize: none;
 }
 
 .switcher-panel-nav {
     position: fixed;
-    bottom: 10px;
-    left: 25px;
-    z-index: 2;
-    width: 35px;
-    height: 35px;
+    bottom: 9px;
+    left: 22px;
+    z-index: 5;
+    width: 30px;
+    height: 30px;
     cursor: pointer;
 }
 
 .switcher-panel > input[type="button"] {
     cursor: pointer;
     float: right;
-    padding: 5px 10px;
-    font-size: 18px;
-    bacground: #fff;
-    border: 1px solid #adadad;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+    padding: 8px 28px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #1099EC;
+    outline: none;
+    width: 105px;
+}
+
+.cancel-btn {
+    background-color: transparent !important;;
+    color: black !important;;
+    border: none;
+    margin-right: 30px;
 }
 
 .switcher-panel > input[type="button"]:hover {
-    background: #fcfcfc;
+    opacity: 0.9;
 }
 
 .switcher-panel-nav > svg,
 .code-copy-nav > svg,
 .code-docs > svg {
-    fill: #ded9d9;
+    fill: black;
 }
 
 .switcher-panel-nav:hover > svg,
 .code-copy-nav:hover > svg,
 .code-docs:hover > svg {
-    fill: #e2e0e0;
+    fill: #292929;
 }
 
 .switcher-panel-nav.with-error > svg {
@@ -115,31 +121,31 @@ body {
 .code-copy-nav {
     position: fixed;
     bottom: 10px;
-    left: 75px;
-    z-index: 2;
-    width: 50px;
-    height: 43px;
+    left: 65px;
+    z-index: 5;
+    width: 40px;
+    height: 34px;
     cursor: pointer;
 }
 
 .code-copy-nav > svg {
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
 }
 
 .code-docs {
     position: fixed;
-    bottom: 10px;
-    left: 140px;
-    z-index: 2;
-    width: 40px;
-    height: 36px;
+    bottom: 9px;
+    left: 117px;
+    z-index: 5;
+    width: 30px;
+    height: 30px;
     cursor: pointer;
 }
 
 .code-docs > svg {
-    height: 40px;
-    width: 40px;
+    height: 30px;
+    width: 30px;
 }
 
 .img-wrapper {
@@ -147,59 +153,17 @@ body {
 }
 
 .note-txt {
-    font-size: 12px;
-    color: #7f7f7f;
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 20px;
 }
 
-.img-container {
-    position: relative;
+.panel-header {
+    font-size: 20px;
+    margin-top: 0;
+    font-weight: 500;
 }
 
-.img-container img {
-    max-width: 100%;
-}
-
-.img-container > svg {
-    z-index: 2;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.img-container svg g polygon {
-    fill: transparent;
-    opacity: 1;
-    stroke: #ececec;
-    stroke-width: 3px;
-    stroke-dasharray: 15;
-    stroke-linecap: round
-}
-
-@-webkit-keyframes square-anim {
-    25% {
-        stroke-dasharray: 15;
-        opacity: .5
-    }
-
-    50% {
-        stroke-dasharray: 10;
-        opacity: .7
-    }
-
-    75% {
-        stroke-dasharray: 6;
-        opacity: .8
-    }
-
-    100% {
-        stroke-dasharray: 0;
-        opacity: 1
-    }
-}
-
-.img-container svg g:hover polygon {
-    animation: square-anim .1s 1 ease-out;
-    animation-fill-mode: forwards
+.active path {
+    fill: #1099EC;
 }
