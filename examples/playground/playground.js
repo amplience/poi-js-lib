@@ -16,10 +16,7 @@
             containerClass: 'js-poi-img-container',
             basePath: 'https://www.crateandbarrel.com/',
             path: 'https://i1.adis.ws/',
-            jsonData: null,
-            canvas: null,
-            layerCommand: null,
-            changeSize: null,
+            jsonData: null
         },
         findPOIClasses: function (imgName) {
             var self = this;
@@ -82,9 +79,6 @@
                     {
                         name: opts.imgName,
                         data: jsonData ? jsonData.metadata : (self.defaults.metadata || false),
-                        canvas: jsonData ? jsonData.canvas : (self.defaults.canvas || false),
-                        layerCommand: jsonData ? jsonData.layerCommand : (self.defaults.layerCommand || false),
-                        changeSize: jsonData ? jsonData.changeSize : (self.defaults.changeSize || false),
                         polygonCallbacks: [
                             {
                                 target: "*",
@@ -157,47 +151,47 @@
                 el.setAttribute('srcset', set)
             });
         },
-        getData: function (opts, callback) {
-            var self = this;
-            var queryStr = opts.query || '';
-            var query = opts.imgName.includes('?') ? '&X-Amp-Trace=true&v=' + new Date().getTime() : '?' + queryStr + '&X-Amp-Trace=true&v=' + new Date().getTime();
+        /*  getData: function (opts, callback) {
+              var self = this;
+              var queryStr = opts.query || '';
+              var query = opts.imgName.includes('?') ? '&X-Amp-Trace=true&v=' + new Date().getTime() : '?' + queryStr + '&X-Amp-Trace=true&v=' + new Date().getTime();
 
-            $.ajax({
-                url: (opts.path || 'http://i1.adis.ws/') + 'i/' + opts.account + '/' + opts.imgName + query,
-                success: function (response) {
-                    var translate = response.find(function (el) {
-                        return el.type === 'translate';
-                    });
-                    if (!translate || !translate.data || !translate.data.output || !translate.data.output.layerCommand) {
-                        return false;
-                    }
-                    var metadata = translate.data.output.layerCommand.metadata;
-                    var layerCommand = translate.data.output.layerCommand;
-                    var childlayers = translate.data.output.childlayers;
-                    var canvas = translate.data.output.layerCommand.info.canvas;
+              $.ajax({
+                  url: (opts.path || 'http://i1.adis.ws/') + 'i/' + opts.account + '/' + opts.imgName + query,
+                  success: function (response) {
+                      var translate = response.find(function (el) {
+                          return el.type === 'translate';
+                      });
+                      if (!translate || !translate.data || !translate.data.output || !translate.data.output.layerCommand) {
+                          return false;
+                      }
+                      var metadata = translate.data.output.layerCommand.metadata;
+                      var layerCommand = translate.data.output.layerCommand;
+                      var childlayers = translate.data.output.childlayers;
+                      var canvas = translate.data.output.layerCommand.info.canvas;
 
-                    if (!metadata) {
-                        metadata = childlayers.find(function (el) {
-                            return el.layerCommand.metadata;
-                        });
+                      if (!metadata) {
+                          metadata = childlayers.find(function (el) {
+                              return el.layerCommand.metadata;
+                          });
 
-                        if (metadata && metadata.layerCommand) {
-                            layerCommand = metadata.layerCommand;
-                            metadata = metadata.layerCommand.metadata;
-                        }
-                    }
+                          if (metadata && metadata.layerCommand) {
+                              layerCommand = metadata.layerCommand;
+                              metadata = metadata.layerCommand.metadata;
+                          }
+                      }
 
-                    return callback.call(self, {
-                        metadata: metadata,
-                        canvas: canvas,
-                        layerCommand: layerCommand
-                    });
-                },
-                error: function () {
-                    return callback.call(self, false);
-                }
-            });
-        },
+                      return callback.call(self, {
+                          metadata: metadata,
+                          canvas: canvas,
+                          layerCommand: layerCommand
+                      });
+                  },
+                  error: function () {
+                      return callback.call(self, false);
+                  }
+              });
+          },*/
 
         //Panel behavior
         panelToggle: function ($panelNav, $panel, callback) {
@@ -240,6 +234,10 @@
             $panelNav.removeClass('with-error');
             self.reapplyImg(self.defaults, settings);
             self.initPOI(settings);
+
+            var $picker = document.getElementById("colorPicker");
+            var picker = tinycolorpicker($picker);
+            picker.setColor('#ececec');
 
             Object.assign(self.defaults, settings)
             // });
@@ -347,6 +345,7 @@
             var $codeCopyButton = $('.js_copy_clipboard');
             var $codeTextarea = $('.js_copy_textarea');
             var $panelDocsContainer = $('.code-docs-panel');
+            var $imgWrapper = $('.img-wrapper');
 
             self.initPOI(self.defaults);
 
@@ -354,6 +353,16 @@
                 e.preventDefault();
                 $panel.toggle();
                 $panelNav.removeClass('active');
+            });
+
+            $imgWrapper.on('click', function (e) {
+                e.preventDefault();
+                $panel.hide();
+                $codePanel.hide();
+                $panelDocsContainer.hide();
+                $panelNav.removeClass('active');
+                $codeNav.removeClass('active');
+                $panelDocs.removeClass('active');
             });
 
             /* self.getData(self.defaults, function (jsonData) {
