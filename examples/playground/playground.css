@@ -164,6 +164,6 @@ body {
     font-weight: 500;
 }
 
-.active path {
+.active path, .active circle {
     fill: #1099EC;
 }
