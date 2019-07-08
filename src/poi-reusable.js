@@ -163,7 +163,7 @@ window.POI.prototype = {
                         var src = $sources[k].getAttribute('srcset');
                         var parentNode = $sources[k].parentNode.getElementsByTagName('img');
                         var nodeSize = $sources[k].getAttribute('media');
-                        var srcArray = src.split(',');
+                        var srcArray = src.split(', ');
                         var x1;
                         var x2;
                         var query;
@@ -246,7 +246,7 @@ window.POI.prototype = {
                         }
 
                         src = $img.getAttribute('srcset');
-                        srcArray = src ? src.split(',') : $img.getAttribute('src').split(',');
+                        srcArray = src ? src.split(', ') : $img.getAttribute('src').split(', ');
 
                         srcArray = srcArray.map(Function.prototype.call, String.prototype.trim);
 
