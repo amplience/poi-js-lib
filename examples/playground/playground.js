@@ -2,8 +2,8 @@
     window.POIGenerator = {
         generatedCode: {
             defaults: {
-                poiJsSrc: 'https://dev-solutions.s3.amazonaws.com/poi-js-lib/poi-lib.min.js',
-                poiCssSrc: 'https://dev-solutions.s3.amazonaws.com/poi-js-lib/css/poi.css'
+                poiJsSrc: 'https://dev-solutions.s3.amazonaws.com/poi-js-lib/v2/poi-lib.min.js',
+                poiCssSrc: 'https://dev-solutions.s3.amazonaws.com/poi-js-lib/v2/css/poi.css'
             },
             appendScriptStyles: null,
             findPOIClasses: null,

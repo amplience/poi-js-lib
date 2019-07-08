@@ -81,12 +81,12 @@
              srcset="//i1-qa.adis.ws/i/tesco/100023354_JJ?w=1024$banner-poi$&layer0=[src=/i//100023354_JJ] 1x, //i1-qa.adis.ws/i/tesco/100023354_JJ?w=2048$banner-poi$&layer0=[src=/i//100023354_JJ] 2x">
     </picture>
 </div>
-<!--<div class="img-container">
+<div class="img-container">
     <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/blue-and-pink?$banner-poi$&layer0=[src=/i//blue-and-pink]">
 </div>
 <div class="img-container">
     <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/download2?crop=100,100,300,300">
-</div>-->
+</div>
 
 <script type="text/javascript" src="../dist/poi-lib.js"></script>
 <script>
@@ -96,7 +96,7 @@
         containerClass: 'img-container',
         imgClass: 'js-poi-img',
         images: [
-            /*  {
+              {
                   name: '*',
                   polygonCallbacks: [
                       {
@@ -133,7 +133,7 @@
                           }
                       }
                   ]
-              },*/
+              },
             {
                 name: "100023354_JJ",
                 polygonCallbacks: [
@@ -162,7 +162,7 @@
                         }
                     }
                 ]
-            }/*,
+            },
             {
                 name: "blue-and-pink",
                 hotspotCallbacks: [
@@ -207,7 +207,7 @@
                         }
                     }
                 ]
-            },*/
+            },
         ]
     });
     poi.init();

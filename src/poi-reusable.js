@@ -22,6 +22,7 @@ window.POI.prototype = {
                     height: params.data.height
                 },
                 canvas: params.canvas,
+                layerCanvas: params.layerCanvas,
                 changeSize: params.changeSize,
                 layerCommand: params.layerCommand,
                 $img: $img,
@@ -64,6 +65,7 @@ window.POI.prototype = {
                     var childlayers = translate.data.output.childlayers;
                     var canvas = translate.data.output.layerCommand.info.canvas;
                     var childLayerMeta;
+                    var layerCanvas;
 
 
                     childLayerMeta = childlayers.find(function (el) {
@@ -73,11 +75,13 @@ window.POI.prototype = {
                     if (childLayerMeta && childLayerMeta.layerCommand) {
                         layerCommand = childLayerMeta.layerCommand;
                         metadata = childLayerMeta.layerCommand.metadata;
+                        layerCanvas = childLayerMeta.layerCommand.info.canvas;
                     }
 
                     self.generateData({
                         data: metadata,
                         layerCommand: layerCommand,
+                        layerCanvas: layerCanvas,
                         canvas: canvas,
                         changeSize: queryStr.includes('crop') || imgObject.name.includes('crop'),
                         img: imgObject,
@@ -114,7 +118,11 @@ window.POI.prototype = {
                                 query = withoutQuery[withoutQuery.length - 1];
                             }
 
-                            if (self.namedImages[nameParsed]) {
+                            var found = imgs.find(function (el) {
+                                return el.name === nameParsed;
+                            });
+
+                            if (found) {
                                 return false;
                             }
                             var imgObject = {
@@ -153,11 +161,14 @@ window.POI.prototype = {
 
                     for (var k = $sources.length - 1; k >= 0; k--) {
                         var src = $sources[k].getAttribute('srcset');
+                        var parentNode = $sources[k].parentNode.getElementsByTagName('img');
                         var nodeSize = $sources[k].getAttribute('media');
                         var srcArray = src.split(',');
                         var x1;
                         var x2;
                         var query;
+
+                        parentNode = parentNode.length ? parentNode[0].getAttribute('src') : '';
 
                         srcArray = srcArray.map(Function.prototype.call, String.prototype.trim);
 
@@ -178,10 +189,13 @@ window.POI.prototype = {
                         }
 
                         withoutQuery = src.split('?');
+                        parentNode = parentNode.split('?');
 
                         nameParsed = withoutQuery[0].split('/');
+                        parentNode = parentNode[0].split('/');
                         query = withoutQuery[1] || '';
                         nameParsed = nameParsed[nameParsed.length - 1];
+                        parentNode = parentNode[parentNode.length - 1];
 
                         nodeSize = nodeSize.split('and');
 
@@ -192,6 +206,7 @@ window.POI.prototype = {
                             hotspotCallbacks: img.hotspotCallbacks,
                             name: nameParsed,
                             query: query,
+                            parentName: parentNode
                         };
 
                         nodeSize = nodeSize.map(function (el) {
@@ -214,7 +229,7 @@ window.POI.prototype = {
                     var imgObj = breakpoints.find(function (el) {
                         var min = el.minWidth || 0;
                         var max = el.maxWidth || 2000;
-                        return min <= windowSize && max >= windowSize;
+                        return min <= windowSize && max >= windowSize && (el.name === img.name || el.parentName === img.name);
                     });
 
                     if (imgObj) {
@@ -222,33 +237,40 @@ window.POI.prototype = {
                         img.breakpoints = breakpoints;
                     } else {
                         var $img = self.findImg(img);
+                        var nx1;
+                        var nx2;
+                        var nquery;
+
+                        if (!$img) {
+                            return false;
+                        }
 
                         src = $img.getAttribute('srcset');
-                        srcArray = src.split(',');
+                        srcArray = src ? src.split(',') : $img.getAttribute('src').split(',');
 
                         srcArray = srcArray.map(Function.prototype.call, String.prototype.trim);
 
                         srcArray.forEach(function (el) {
                             if (el.includes('1x')) {
-                                x1 = el;
+                                nx1 = el;
                             } else if (el.includes('2x')) {
-                                x2 = el;
+                                nx2 = el;
                             } else {
-                                x1 = el;
+                                nx1 = el;
                             }
                         });
 
-                        if (retina && x2) {
-                            src = x2;
-                        } else if (x1) {
-                            src = x1;
+                        if (retina && nx2) {
+                            src = nx2;
+                        } else if (nx1) {
+                            src = nx1;
                         }
 
                         withoutQuery = src.split('?');
 
-                        query = withoutQuery[1] || '';
+                        nquery = withoutQuery[1] || '';
 
-                        img.query = query;
+                        img.query = nquery;
                     }
 
                     if (img && img.data) {
@@ -399,9 +421,6 @@ window.POI.prototype = {
         var self = this;
 
         for (var i = imgs.length - 1; i >= 0; i--) {
-            if (imgs[i].name && imgs[i].name !== '*') {
-                self.namedImages[imgs[i].name] = true;
-            }
             if (imgs[i].breakpoints && imgs[i].breakpoints.length) {
                 needResizeSubscription = true;
                 break;

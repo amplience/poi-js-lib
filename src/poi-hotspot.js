@@ -33,7 +33,7 @@ POI.prototype.hotspots = function () {
             if ($parent && parent.dom.hasClass($parent, parent.params.containerClass)) {
                 var pointX = point.points.x * imgInfo.dimensions.width;
                 var pointY = point.points.y * imgInfo.dimensions.height;
-                var canvas = imgInfo.canvas;
+                var canvas = imgInfo.layerCanvas || imgInfo.canvas;
                 var layerCommand = imgInfo.layerCommand;
                 var tileEndW = layerCommand.tileEndW;
                 var tileEndH = layerCommand.tileEndH;
