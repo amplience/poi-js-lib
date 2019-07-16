@@ -79,6 +79,32 @@
                     {
                         name: opts.imgName,
                         data: jsonData ? jsonData.metadata : (self.defaults.metadata || false),
+                        hotspotCallbacks: [
+                            {
+                                target: "*",
+                                action: "click",
+                                callback: function (evt, settings) {
+                                    window.open(
+                                        opts.basePath + settings.hotspot.target,
+                                        '_blank'
+                                    )
+                                }
+                            },
+                            {
+                                target: "*",
+                                action: 'mouseover',
+                                callback: function (evt, settings) {
+                                    settings.$target.classList.add('hovered');
+                                }
+                            },
+                            {
+                                target: "*",
+                                action: 'mouseout',
+                                callback: function (evt, settings) {
+                                    settings.$target.classList.remove('hovered');
+                                }
+                            }
+                        ],
                         polygonCallbacks: [
                             {
                                 target: "*",
@@ -113,6 +139,9 @@
         destroyPOI: function () {
             $('.js-img-container').find('svg').each(function () {
                 $(this).remove();
+            });
+            $('.js-img-container').find('div').each(function () {
+                $(this).remove();
             })
         },
         reapplyImg: function (defaults, opts) {
@@ -128,7 +157,7 @@
 
             $sources.forEach(function (el) {
                 var set = el && el.getAttribute('srcset');
-                set = set.split(',');
+                set = set.split(', ');
 
                 set = set.map(function (el) {
                     var paths = el.split('?');

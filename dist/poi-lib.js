@@ -914,6 +914,8 @@ POI.prototype.polygons = function () {
             //Create hotspots, add class, styles, find parent, add event callbacks
             var callbacks = imgInfo.data.polygonCallbacks;
             var selector = point.selector;
+            var $picker = document.getElementById("colorPicker");
+            var color = $picker && $picker.querySelector('.colorInput').getAttribute('value');
 
             if (!selector) {
                 console.warn('no selector specified');
@@ -960,6 +962,10 @@ POI.prototype.polygons = function () {
                 $elem.setAttributeNS(null, 'id', selector);
             } else {
                 $elem.setAttributeNS(null, 'class', selector);
+            }
+
+            if (color) {
+                $elem.setAttributeNS(null, 'style', 'stroke: ' + color);
             }
 
             if ($parent && parent.dom.hasClass($parent, parent.params.containerClass)) {

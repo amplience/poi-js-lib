@@ -25,7 +25,6 @@ POI.init({
         images: [
             {
                name: "large1",
-               // data: {"isImage":true,"alpha":false,"width":4273,"height":2268,"format":"JPEG","metadata":{"image":{"colorSpace":"rgb","resolutionY":72,"valid":true,"resolutionX":72,"depth":8,"alpha":false,"format":"JPEG","width":4273,"id":"bfbc9a80-c2ef-4df7-837a-2fa25be1824a","height":2268,"resolutionUnits":1},"hotSpots":{"hasPolygon":true,"hotSpots":{"list":[{"selector":"img-point","id":"475e1c78-55f0-42fe-a841-870fbf18785c","type":"sku","points":{"x":0.82334144592285,"y":0.85594985064338},"target":"rightLeg"},{"selector":".img-point-2","id":"43041d6f-aa1e-4654-b24d-3cd5b9cc1568","type":"sku","points":{"x":0.11536297798157,"y":0.69578024471507},"target":"leftLeg"},{"selector":".img-area","id":"c17448ea-cf85-43e2-a5f4-16277250f95b","type":"sku","points":[{"x":0.72445787512352,"y":0.19781434697355},{"x":0.8297635232058,"y":0.19781434697355},{"x":0.8297635232058,"y":0.42811810702956},{"x":0.72445787512352,"y":0.42811810702956}],"target":"rightPillow"},{"selector":"img-point-2","id":"eae74187-2d3c-4ede-aa7c-43835addc4b3","type":"sku","points":{"x":0.27611713409424,"y":0.3154537784352},"target":"leftPillow"},{"selector":"img-area","id":"91e379bd-13a3-46f0-8e37-4786336fe699","type":"sku","points":[{"x":0.38189503211493,"y":0.43744145425146},{"x":0.50689503211493,"y":0.43744145425146},{"x":0.50689503211493,"y":0.67273557189852},{"x":0.38189503211493,"y":0.67273557189852}],"target":"middle"}]},"hasPoint":true},"file":{"size":1233166,"id":"bfbc9a80-c2ef-4df7-837a-2fa25be1824a","type":"JPEG"},"pointOfInterest":{"w":0.125,"h":0.23529411764706,"x":0.17789419174194,"y":0.061920201918658},"exif":{"gpsLocation":"0.0, 0.0","orientation":1,"exposureTime":"1\/160","software":"Adobe Photoshop CS6 (Macintosh)","taken":1397049205,"isoSpeed":100,"model":"Canon EOS 5D Mark III","id":"bfbc9a80-c2ef-4df7-837a-2fa25be1824a","make":"Canon","focalLength":"50\/1"}},"status":"ok"},
                 hotspotCallbacks:[
                     {
                         target: "mountain left",
@@ -38,29 +37,6 @@ POI.init({
             },
             {
                 name: "zinc_4a_zinc_tealandbluecombination_view2",
-                breakpoints: [
-                    {
-                        name: "zinc_4a_zinc_tealandbluecombination_view2",
-                        minWidth: 769
-                    },
-                    {
-                        name: "zinc_4a_zinc_tealandbluecombination_mobile",
-                        minWidth: 0,
-                        maxWidth: 768,
-                        polygonCallbacks: [
-                            {
-                                target: "hand",
-                                action: "click",
-                                callback: function (evt, settings) {
-                                    console.log('generic click', settings);
-                                },
-                                initCallback: function (settings) {
-                                    console.log('init callback polygon', settings);
-                                }
-                            }
-                        ]
-                    }
-                ],
                 polygonCallbacks:[
                     {
                         target: "rightLeg",
@@ -104,20 +80,28 @@ POI.init({
 * **containerClass**: Parent class name, inside which image is located
 * **imgClass**: Image class name, to which hotspots will be applied
 * **images**: Array of images with image names and callbacks for hotspots
-* **data**: You can specify data directly if you already retrieved it from another AJAX request.
-This way, there is no need to make new AJAX request. 
-In the example above this param is commented out for demonstration purposes
 
-Also you can specify breakpoints array for picture images, each breakpoint object should contain image name, minWidth and maxWidth, also you can specify polygonCallbacks and hotspotCallbacks for each breakpoint separately.
-In other case polygonCallbacks and hotspotCallbacks will be inherited from it's main image.
-
-Also there is simple way to render hotspots and polygons for all images. For this specify image name as * and target of callbacks as *, too.
+There is simple way to render hotspots and polygons for all images. For this specify image name as * and target of callbacks as *, too.
 Images configuration with specified names (not *) will be more priorited.
 
+If you want to use picture tad, please specify it next way:
+
+```html
+    <picture>
+        <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=768 1x, //i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=1046 2x"
+                type="image/webp"
+                media="(max-width: 768px) and (min-width: 0px)">
+        <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=768 1x, //i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=1046 2x"
+                media="(max-width: 768px) and (min-width: 0px)">
+        <img class="js-poi-img another class"
+             src="//i1-qa.adis.ws/i/tesco/100023354_JJ"
+             srcset="//i1-qa.adis.ws/i/tesco/100023354_JJ?w=1024&layer0=[scaleFit=poi&poi={$this.metadata.pointOfInterest.x},{$this.metadata.pointOfInterest.y},{$this.metadata.pointOfInterest.w},{$this.metadata.pointOfInterest.h}&sm=c&aspect=1:1&w=768&h=768]&layer0=[src=/i//100023354_JJ] 1x, //i1-qa.adis.ws/i/tesco/100023354_JJ?w=2048&layer0=[scaleFit=poi&poi={$this.metadata.pointOfInterest.x},{$this.metadata.pointOfInterest.y},{$this.metadata.pointOfInterest.w},{$this.metadata.pointOfInterest.h}&sm=c&aspect=1:1&w=768&h=768]&layer0=[src=/i//100023354_JJ] 2x">
+    </picture>
+```
+
+Use media with min amd max width. Also base src for image and srcset.
 
 ### Event handlers example attached to hotspots ###
-
-
 
 ```
 #!javascript
@@ -188,5 +172,3 @@ Open new terminal window and run ```npm run test```
 
 ### License ###
 This software is provided under Apache License, Version 2.0. More details in ```README.md```
-
-layer0=[scaleFit=poi&poi={$this.metadata.pointOfInterest.x},{$this.metadata.pointOfInterest.y},{$this.metadata.pointOfInterest.w},{$this.metadata.pointOfInterest.h}&sm=c&aspect=1:1&w={$this.image.height>768?768:$this.image.height}&h={$this.image.height>768?768:$this.image.height}]
