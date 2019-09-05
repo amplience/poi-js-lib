@@ -73,9 +73,9 @@
     <picture>
         <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=768 1x, //i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=1046 2x"
                 type="image/webp"
-                media="(max-width: 768px) and (min-width: 0px)">
+                media="(max-width: 768px)">
         <source srcset="//i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=768 1x, //i1-qa.adis.ws/i/tesco/1-shutterstock_588634790-825x465?w=1046 2x"
-                media="(max-width: 768px) and (min-width: 0px)">
+                media="(max-width: 768px)">
         <img class="js-poi-img another class"
              src="//i1-qa.adis.ws/i/tesco/100023354_JJ"
              srcset="//i1-qa.adis.ws/i/tesco/100023354_JJ?w=1024&layer0=[scaleFit=poi&poi={$this.metadata.pointOfInterest.x},{$this.metadata.pointOfInterest.y},{$this.metadata.pointOfInterest.w},{$this.metadata.pointOfInterest.h}&sm=c&aspect=1:1&w=768&h=768]&layer0=[src=/i//100023354_JJ] 1x, //i1-qa.adis.ws/i/tesco/100023354_JJ?w=2048&layer0=[scaleFit=poi&poi={$this.metadata.pointOfInterest.x},{$this.metadata.pointOfInterest.y},{$this.metadata.pointOfInterest.w},{$this.metadata.pointOfInterest.h}&sm=c&aspect=1:1&w=768&h=768]&layer0=[src=/i//100023354_JJ] 2x">
@@ -85,7 +85,7 @@
     <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/blue-and-pink?layer0=[scaleFit=poi&poi={$this.metadata.pointOfInterest.x},{$this.metadata.pointOfInterest.y},{$this.metadata.pointOfInterest.w},{$this.metadata.pointOfInterest.h}&sm=c&aspect=1:1&w=768&h=768]&layer0=[src=/i//blue-and-pink]">
 </div>
 <div class="img-container">
-    <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/download2?crop=100,100,300,300">
+    <img class="js-poi-img another class" src="//i1-qa.adis.ws/i/tesco/download2/seoText?crop=100,100,300,300">
 </div>
 
 <script type="text/javascript" src="../dist/poi-lib.js"></script>
@@ -134,80 +134,6 @@
                       }
                   ]
               },
-            {
-                name: "100023354_JJ",
-                polygonCallbacks: [
-                    {
-                        target: "*",
-                        action: "click",
-                        callback: function (evt, settings) {
-                            console.log('generic click', settings);
-
-                        },
-                        initCallback: function (settings) {
-                            console.log('init callback polygon', settings);
-                        }
-                    }
-                ],
-                hotspotCallbacks: [
-                    {
-                        target: "test",
-                        action: "click",
-                        callback: function (evt, settings) {
-                            console.log('generic hair click', settings);
-
-                        },
-                        initCallback: function (settings) {
-                            console.log('init hair click', settings);
-                        }
-                    }
-                ]
-            },
-            {
-                name: "blue-and-pink",
-                hotspotCallbacks: [
-                    {
-                        target: "hat",
-                        action: "click",
-                        callback: function (evt, settings) {
-                            console.log('blue-and-pink');
-                        },
-                        initCallback: function (settings) {
-                            console.log('init blue-and-pink');
-                        }
-                    },
-                    {
-                        target: "hat",
-                        action: "mouseover",
-                        callback: function (evt, settings) {
-                            console.log('blue-and-pink mouseover');
-                        },
-                        initCallback: function (settings) {
-                            console.log('init blue-and-pink mouseover');
-                        }
-                    },
-                    {
-                        target: "bracelet",
-                        action: "mouseover",
-                        callback: function (evt, settings) {
-                            console.log('blue-and-pink mouseover');
-                        },
-                        initCallback: function (settings) {
-                            console.log('init blue-and-pink mouseover');
-                        }
-                    },
-                    {
-                        target: "*",
-                        action: "mouseover",
-                        callback: function (evt, settings) {
-                            console.log('yay, i was hovered :)', settings);
-                        },
-                        initCallback: function (settings) {
-                            console.log('init callback hotspot', settings);
-                        }
-                    }
-                ]
-            },
         ]
     });
     poi.init();

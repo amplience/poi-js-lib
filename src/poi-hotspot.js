@@ -129,6 +129,5 @@ POI.prototype.hotspots = function () {
         }
     };
     return methods;
-}
-;
+};
 
