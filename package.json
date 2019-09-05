@@ -14,9 +14,7 @@
   "author": "arthur@amplience.com",
   "license": "Apache 2.0",
   "homepage": "https://github.com/amplience/poi-js-lib#readme",
-  "dependencies": {
-    "atomicjs": "v3.2.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "chromedriver": "^2.33.2",
     "deep-equal": "^1.0.1",

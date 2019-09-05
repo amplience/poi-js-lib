@@ -227,55 +227,55 @@ window.POI.prototype = {
             var queryStr = imgObject.query || '';
             var nName = imgObject.name !== '*' ? imgObject.name : name;
             var query = nName.includes('?') ? '&X-Amp-Trace=true&v=' + new Date().getTime() : '?' + queryStr + '&X-Amp-Trace=true&v=' + new Date().getTime();
-            atomic.ajax({
-                url: self.params.domain + '/i/' + self.params.account + '/' + nName + query
-            }).success(function (data) {
-                var translate = data.find(function (el) {
-                    return el.type === 'translate';
-                });
-                if (!translate || !translate.data || !translate.data.output || !translate.data.output.layerCommand) {
-                    return false;
-                }
-                var metadata = translate.data.output.layerCommand.metadata;
-                var layerCommand = translate.data.output.layerCommand;
-                var childlayers = translate.data.output.childlayers;
-                var canvas = translate.data.output.layerCommand.info.canvas;
-                var childLayerMeta;
-                var layerCanvas;
-
-
-                childLayerMeta = childlayers.find(function (el) {
-                    return el.layerCommand.metadata;
-                });
-
-                if (childLayerMeta && childLayerMeta.layerCommand) {
-                    layerCommand = childLayerMeta.layerCommand;
-                    metadata = childLayerMeta.layerCommand.metadata;
-                    layerCanvas = childLayerMeta.layerCommand.info.canvas;
-                }
-
-                self.generateData({
-                    data: metadata,
-                    layerCommand: layerCommand,
-                    layerCanvas: layerCanvas,
-                    canvas: canvas,
-                    changeSize: queryStr.includes('crop') || imgObject.name.includes('crop'),
-                    img: {
-                        name: name,
-                        hotspotCallbacks: imgObject.hotspotCallbacks,
-                        polygonCallbacks: imgObject.polygonCallbacks,
-                        query: imgObject.query,
-                        parentName: imgObject.parentName,
-                        breakpoints: imgObject.breakpoints,
-                        minWidth: imgObject.minWidth,
-                        maxWidth: imgObject.maxWidth
-                    },
-                    breakpoints: imgObject.breakpoints,
-                    callback: function (imgInfo) {
-                        callback(imgInfo);
+            self.ajax.atomic(self.params.domain + '/i/' + self.params.account + '/' + nName + query)
+                .then(function (dataObj) {
+                    var data = dataObj.data;
+                    var translate = data.find(function (el) {
+                        return el.type === 'translate';
+                    });
+                    if (!translate || !translate.data || !translate.data.output || !translate.data.output.layerCommand) {
+                        return false;
                     }
-                });
-            }).error(function (err) {
+                    var metadata = translate.data.output.layerCommand.metadata;
+                    var layerCommand = translate.data.output.layerCommand;
+                    var childlayers = translate.data.output.childlayers;
+                    var canvas = translate.data.output.layerCommand.info.canvas;
+                    var childLayerMeta;
+                    var layerCanvas;
+
+
+                    childLayerMeta = childlayers.find(function (el) {
+                        return el.layerCommand.metadata;
+                    });
+
+                    if (childLayerMeta && childLayerMeta.layerCommand) {
+                        layerCommand = childLayerMeta.layerCommand;
+                        metadata = childLayerMeta.layerCommand.metadata;
+                        layerCanvas = childLayerMeta.layerCommand.info.canvas;
+                    }
+
+                    self.generateData({
+                        data: metadata,
+                        layerCommand: layerCommand,
+                        layerCanvas: layerCanvas,
+                        canvas: canvas,
+                        changeSize: queryStr.includes('crop') || imgObject.name.includes('crop'),
+                        img: {
+                            name: name,
+                            hotspotCallbacks: imgObject.hotspotCallbacks,
+                            polygonCallbacks: imgObject.polygonCallbacks,
+                            query: imgObject.query,
+                            parentName: imgObject.parentName,
+                            breakpoints: imgObject.breakpoints,
+                            minWidth: imgObject.minWidth,
+                            maxWidth: imgObject.maxWidth
+                        },
+                        breakpoints: imgObject.breakpoints,
+                        callback: function (imgInfo) {
+                            callback(imgInfo);
+                        }
+                    });
+                }).catch(function (err) {
                 console.error('Image failed to load', err);
             });
         };

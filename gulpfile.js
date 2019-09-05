@@ -16,12 +16,11 @@ var distPath = './dist/';
 
 gulp.task('build', function () {
     return merge2(gulp.src([
-        './node_modules/atomicjs/dist/atomic.js',
         './src/poi-reusable.js',
         './src/poi-dom.js',
         './src/poi-hotspot.js',
         './src/poi-polygon.js',
-        './src/poi.js'
+        './src/poi-ajax.js'
     ])
         .pipe(plumber(function (error) {
 
