@@ -12,7 +12,7 @@
     display: block;
 }
 
-.amp-poi-hotspot {
+[data-type="poi-hotspot"] {
     cursor: pointer;
     z-index: 3;
     width: 30px;
@@ -24,19 +24,19 @@
     transition: transform .2s ease-in-out;
 }
 
-.amp-poi-hotspot:hover {
+[data-type="poi-hotspot"]:hover {
     -webkit-transition: -webkit-transform .2s ease-in-out;
     transition: transform .2s ease-in-out;
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
 }
 
-.amp-poi-hotspot.active {
+[data-type="poi-hotspot"].active {
     opacity: 0.5;
     cursor: default;
 }
 
-.amp-poi-hotspot:after {
+[data-type="poi-hotspot"]:after {
     content: '';
     position: absolute;
     top: 0;
@@ -47,7 +47,7 @@
     background: url('https://dev-solutions.s3.amazonaws.com/poi-js-lib/svg/target.svg') no-repeat 0 0;
 }
 
-.amp-poi-hotspot:before {
+[data-type="poi-hotspot"]:before {
     content: '';
     border-radius: 30px;
     -moz-border-radius: 30px;

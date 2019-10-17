@@ -288,7 +288,7 @@ POI.prototype.hotspots = function () {
                 $elem.setAttribute('class', selector);
             }
 
-            $elem.classList.add('amp-poi-hotspot');
+            $elem.setAttribute('data-type', "poi-hotspot");
 
             var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
 
