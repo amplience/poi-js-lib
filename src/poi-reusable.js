@@ -34,39 +34,67 @@ window.POI.prototype = {
     getImgData: function (callback) {
         var self = this;
         var imgs = this.params.images;
+        var $imgs = document.querySelectorAll('img.' + this.params.imgClass);
 
-        for (var x = 0; x < imgs.length; x++) {
-            (function () {
-                var i = x;
-                if (imgs[i].data) {
+        var getImgData = function (img) {
+            self.ajax.atomic(self.params.domain + '/i/' + self.params.account + '/' + img.name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime())
+                .then(function (dataObj) {
+                    var data = dataObj.data;
                     self.generateData({
-                        data: imgs[i].data,
-                        img: imgs[i],
+                        data: data,
+                        img: img,
                         callback: function (imgInfo) {
                             callback(imgInfo);
                         }
                     });
-                }
+                })
+        };
 
-                else {
-                    //Calls Ajax for each image, and executes callback for each found hotspots
-                    atomic.ajax({
-                        url: self.params.domain + '/i/' + self.params.account + '/' + imgs[i].name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime()
-                    })
-                        .success(function (data) {
-                            self.generateData({
-                                data: data,
-                                img: imgs[i],
-                                callback: function (imgInfo) {
-                                    callback(imgInfo);
-                                }
+        for (var x = 0; x < imgs.length; x++) {
+            (function () {
+                var i = x;
+                if (imgs[i].name === '*') {
+                    for (var y = 0; y < $imgs.length; y++) {
+                        (function () {
+                            var j = y;
+                            var imgWithName = $imgs[j];
+                            var srcParsed = imgWithName.getAttribute('src');
+                            var nameParsed;
+                            var withoutQuery = srcParsed.split('?');
+
+                            nameParsed = withoutQuery[0].split(self.params.account + '/');
+                            nameParsed = nameParsed[nameParsed.length - 1].split('/');
+                            nameParsed = nameParsed[0];
+
+                            var found = imgs.find(function (el) {
+                                return el.name === nameParsed;
                             });
-                        })
-                        .error(function (err) {
-                            console.error('Image failed to load', err);
-                        });
-                }
 
+                            if (found) {
+                                return false;
+                            }
+
+                            getImgData({
+                                name: nameParsed,
+                                hotspotCallbacks: imgs[i].hotspotCallbacks,
+                                polygonCallbacks: imgs[i].polygonCallbacks
+                            });
+                        })()
+                    }
+                } else {
+                    if (imgs[i].data) {
+                        self.generateData({
+                            data: imgs[i].data,
+                            img: imgs[i],
+                            callback: function (imgInfo) {
+                                callback(imgInfo);
+                            }
+                        });
+                    } else {
+                        //Calls Ajax for each image, and executes callback for each found hotspots
+                        getImgData(imgs[i]);
+                    }
+                }
             }());
         }
     },
@@ -116,7 +144,7 @@ window.POI.prototype = {
         }
 
         var hotspots = this.hotspots();
-        var areaInterest = this.areaInterest();
+        var areaInterest = this.polygons();
         var points = imgInfo.points;
 
         for (var i = 0; i < points.length; i++) {
@@ -129,7 +157,7 @@ window.POI.prototype = {
         }
     },
     assignEvents: function ($elem, target, callbacks, params) {
-        //Loop over events callback, defined in params, and assign them to hotspots or area of interest
+        //Loop over events callback, defined in params, and assign them to hotspots or polygon
         if (callbacks && callbacks.length > 0) {
             for (var z = 0; z < callbacks.length; z++) {
                 (function () {

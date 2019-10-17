@@ -51,7 +51,7 @@ module.exports = {
                     })
             })
     },
-    'Area of Interest tests': function (browser) {
+    'polygon tests': function (browser) {
         browser
             .execute([], function (res) {
                 var points = polygon.points;

@@ -1,247 +1,3 @@
-/*!
- * atomicjs v3.2.0: A tiny vanilla JS Ajax/HTTP plugin with great browser support
- * (c) 2017 Chris Ferdinandi
- * MIT License
- * https://github.com/cferdinandi/atomic
- * Originally created and maintained by Todd Motto - https://toddmotto.com
- */
-(function (root, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define([], factory(root));
-	} else if (typeof exports === 'object') {
-		module.exports = factory(root);
-	} else {
-		root.atomic = factory(root);
-	}
-})(typeof global !== 'undefined' ? global : this.window || this.global, (function (root) {
-
-	'use strict';
-
-	//
-	// Variables
-	//
-
-	var atomic = {}; // Object for public APIs
-	var supports = !!root.XMLHttpRequest && !!root.JSON; // Feature test
-	var settings;
-
-	// Default settings
-	var defaults = {
-		type: 'GET',
-		url: null,
-		data: {},
-		callback: null,
-		headers: {
-			'Content-type': 'application/x-www-form-urlencoded'
-		},
-		responseType: 'text',
-		withCredentials: false
-	};
-
-
-	//
-	// Methods
-	//
-
-	/**
-	 * Merge two or more objects. Returns a new object.
-	 * @private
-	 * @param {Boolean}  deep     If true, do a deep (or recursive) merge [optional]
-	 * @param {Object}   objects  The objects to merge together
-	 * @returns {Object}          Merged values of defaults and options
-	 */
-	var extend = function () {
-
-		// Setup extended object
-		var extended = {};
-
-		// Merge the object into the extended object
-		var merge = function (obj) {
-			for ( var prop in obj ) {
-				if ( Object.prototype.hasOwnProperty.call( obj, prop ) ) {
-					if ( Object.prototype.toString.call(obj[prop]) === '[object Object]' ) {
-						extended[prop] = extend( true, extended[prop], obj[prop] );
-					} else {
-						extended[prop] = obj[prop];
-					}
-				}
-			}
-		};
-
-		// Loop through each object and conduct a merge
-		for (var i = 0; i < arguments.length; i++) {
-			var obj = arguments[i];
-			merge(obj);
-		}
-
-		return extended;
-
-	};
-
-	/**
-	 * Parse text response into JSON
-	 * @private
-	 * @param  {String} req The response
-	 * @return {Array}      A JSON Object of the responseText, plus the orginal response
-	 */
-	var parse = function (req) {
-		var result;
-		if (settings.responseType !== 'text' && settings.responseType !== '') {
-			return [req.response, req];
-		}
-		try {
-			result = JSON.parse(req.responseText);
-		} catch (e) {
-			result = req.responseText;
-		}
-		return [result, req];
-	};
-
-	/**
-	 * Convert an object into a query string
-	 * @private
-	 * @@link  https://blog.garstasio.com/you-dont-need-jquery/ajax/
-	 * @param  {Object|Array|String} obj The object
-	 * @return {String}                  The query string
-	 */
-	var param = function (obj) {
-		if (typeof (obj) === 'string') return obj;
-		if (/application\/json/i.test(settings.headers['Content-type']) || Object.prototype.toString.call(obj) === '[object Array]') return JSON.stringify(obj);
-		var encoded = [];
-		for (var prop in obj) {
-			if (obj.hasOwnProperty(prop)) {
-				encoded.push(encodeURIComponent(prop) + '=' + encodeURIComponent(obj[prop]));
-			}
-		}
-		return encoded.join('&');
-	};
-
-	/**
-	 * Make an XML HTTP request
-	 * @private
-	 * @return {Object} Chained success/error/always methods
-	 */
-	var xhr = function () {
-
-		// Our default methods
-		var methods = {
-			success: function () {},
-			error: function () {},
-			always: function () {}
-		};
-
-		// Override defaults with user methods and setup chaining
-		var atomXHR = {
-			success: function (callback) {
-				methods.success = callback;
-				return atomXHR;
-			},
-			error: function (callback) {
-				methods.error = callback;
-				return atomXHR;
-			},
-			always: function (callback) {
-				methods.always = callback;
-				return atomXHR;
-			}
-		};
-
-		// Create our HTTP request
-		var request = new XMLHttpRequest();
-
-		// Setup our listener to process compeleted requests
-		request.onreadystatechange = function () {
-
-			// Only run if the request is complete
-			if ( request.readyState !== 4 ) return;
-
-			// Parse the response text
-			var req = parse(request);
-
-			// Process the response
-			if (request.status >= 200 && request.status < 300) {
-				// If successful
-				methods.success.apply(methods, req);
-			} else {
-				// If failed
-				methods.error.apply(methods, req);
-			}
-
-			// Run always
-			methods.always.apply(methods, req);
-
-		};
-
-		// Setup our HTTP request
-		request.open(settings.type, settings.url, true);
-		request.responseType = settings.responseType;
-
-		// Add headers
-		for (var header in settings.headers) {
-			if (settings.headers.hasOwnProperty(header)) {
-				request.setRequestHeader(header, settings.headers[header]);
-			}
-		}
-
-		// Add withCredentials
-		if (settings.withCredentials) {
-			request.withCredentials = true;
-		}
-
-		// Send the request
-		request.send(param(settings.data));
-
-		return atomXHR;
-	};
-
-	/**
-	 * Make a JSONP request
-	 * @private
-	 * @return {[type]} [description]
-	 */
-	var jsonp = function () {
-		// Create script with the url and callback
-		var ref = root.document.getElementsByTagName( 'script' )[ 0 ];
-		var script = root.document.createElement( 'script' );
-		settings.data.callback = settings.callback;
-		script.src = settings.url + (settings.url.indexOf( '?' ) + 1 ? '&' : '?') + param(settings.data);
-
-		// Insert script tag into the DOM (append to <head>)
-		ref.parentNode.insertBefore( script, ref );
-
-		// After the script is loaded and executed, remove it
-		script.onload = function () {
-			this.remove();
-		};
-	};
-
-	/**
-	 * Make an Ajax request
-	 * @public
-	 * @param  {Object} options  User settings
-	 * @return {String|Object}   The Ajax request response
-	 */
-	atomic.ajax = function (options) {
-
-		// feature test
-		if ( !supports ) return;
-
-		// Merge user options with defaults
-		settings = extend( defaults, options || {} );
-
-		// Make our Ajax or JSONP request
-		return ( settings.type.toLowerCase() === 'jsonp' ? jsonp() : xhr() );
-
-	};
-
-
-	//
-	// Public APIs
-	//
-
-	return atomic;
-
-}));
 'use strict';
 window.POI = function (params) {
     this.images = [];
@@ -278,39 +34,67 @@ window.POI.prototype = {
     getImgData: function (callback) {
         var self = this;
         var imgs = this.params.images;
+        var $imgs = document.querySelectorAll('img.' + this.params.imgClass);
 
-        for (var x = 0; x < imgs.length; x++) {
-            (function () {
-                var i = x;
-                if (imgs[i].data) {
+        var getImgData = function (img) {
+            self.ajax.atomic(self.params.domain + '/i/' + self.params.account + '/' + img.name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime())
+                .then(function (dataObj) {
+                    var data = dataObj.data;
                     self.generateData({
-                        data: imgs[i].data,
-                        img: imgs[i],
+                        data: data,
+                        img: img,
                         callback: function (imgInfo) {
                             callback(imgInfo);
                         }
                     });
-                }
+                })
+        };
 
-                else {
-                    //Calls Ajax for each image, and executes callback for each found hotspots
-                    atomic.ajax({
-                        url: self.params.domain + '/i/' + self.params.account + '/' + imgs[i].name + '.json?metadata=true&func=amp.jsonReturn&v=' + new Date().getTime()
-                    })
-                        .success(function (data) {
-                            self.generateData({
-                                data: data,
-                                img: imgs[i],
-                                callback: function (imgInfo) {
-                                    callback(imgInfo);
-                                }
+        for (var x = 0; x < imgs.length; x++) {
+            (function () {
+                var i = x;
+                if (imgs[i].name === '*') {
+                    for (var y = 0; y < $imgs.length; y++) {
+                        (function () {
+                            var j = y;
+                            var imgWithName = $imgs[j];
+                            var srcParsed = imgWithName.getAttribute('src');
+                            var nameParsed;
+                            var withoutQuery = srcParsed.split('?');
+
+                            nameParsed = withoutQuery[0].split(self.params.account + '/');
+                            nameParsed = nameParsed[nameParsed.length - 1].split('/');
+                            nameParsed = nameParsed[0];
+
+                            var found = imgs.find(function (el) {
+                                return el.name === nameParsed;
                             });
-                        })
-                        .error(function (err) {
-                            console.error('Image failed to load', err);
-                        });
-                }
 
+                            if (found) {
+                                return false;
+                            }
+
+                            getImgData({
+                                name: nameParsed,
+                                hotspotCallbacks: imgs[i].hotspotCallbacks,
+                                polygonCallbacks: imgs[i].polygonCallbacks
+                            });
+                        })()
+                    }
+                } else {
+                    if (imgs[i].data) {
+                        self.generateData({
+                            data: imgs[i].data,
+                            img: imgs[i],
+                            callback: function (imgInfo) {
+                                callback(imgInfo);
+                            }
+                        });
+                    } else {
+                        //Calls Ajax for each image, and executes callback for each found hotspots
+                        getImgData(imgs[i]);
+                    }
+                }
             }());
         }
     },
@@ -360,7 +144,7 @@ window.POI.prototype = {
         }
 
         var hotspots = this.hotspots();
-        var areaInterest = this.areaInterest();
+        var areaInterest = this.polygons();
         var points = imgInfo.points;
 
         for (var i = 0; i < points.length; i++) {
@@ -373,7 +157,7 @@ window.POI.prototype = {
         }
     },
     assignEvents: function ($elem, target, callbacks, params) {
-        //Loop over events callback, defined in params, and assign them to hotspots or area of interest
+        //Loop over events callback, defined in params, and assign them to hotspots or polygon
         if (callbacks && callbacks.length > 0) {
             for (var z = 0; z < callbacks.length; z++) {
                 (function () {
@@ -497,15 +281,14 @@ POI.prototype.hotspots = function () {
             if (selector.indexOf('.') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttribute('class', selector);
-            }
-
-            else if (selector.indexOf('#') === 0) {
+            } else if (selector.indexOf('#') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttribute('id', selector);
-            }
-            else {
+            } else {
                 $elem.setAttribute('class', selector);
             }
+
+            $elem.classList.add('amp-poi-hotspot');
 
             var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
 
@@ -547,13 +330,13 @@ POI.prototype.hotspots = function () {
 
 'use strict';
 
-POI.prototype.areaInterest = function () {
+POI.prototype.polygons = function () {
     var parent = this;
 
     var methods = {
         create: function (point, imgInfo) {
             //Create hotspots, add class, styles, find parent, add event callbacks
-            var callbacks = imgInfo.data.areaCallbacks;
+            var callbacks = imgInfo.data.polygonCallbacks;
             var selector = point.selector;
 
             if (!selector) {
@@ -573,21 +356,17 @@ POI.prototype.areaInterest = function () {
                 $svg.setAttributeNS(null, 'viewBox', '0 0 ' + imgInfo.dimensions.width + ' ' + imgInfo.dimensions.height);
                 $parent.appendChild($svg);
                 imgInfo.svg = $svg;
-            }
-            else {
+            } else {
                 $svg = imgInfo.svg;
             }
 
             if (selector.indexOf('.') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttributeNS(null, 'class', selector);
-            }
-
-            else if (selector.indexOf('#') === 0) {
+            } else if (selector.indexOf('#') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttributeNS(null, 'id', selector);
-            }
-            else {
+            } else {
                 $elem.setAttributeNS(null, 'class', selector);
             }
 
@@ -608,7 +387,7 @@ POI.prototype.areaInterest = function () {
                         $image: imgInfo.$img,
                         $target: $group,
                         $parent: $parent,
-                        area: point,
+                        polygon: point,
                         imgInfo: imgInfo
                     });
                 }
@@ -623,3 +402,206 @@ POI.prototype.areaInterest = function () {
     return methods;
 };
 
+
+'use strict';
+POI.prototype.ajax = {
+// Default settings
+    settings: null,
+    defaults: {
+        method: 'GET',
+        username: null,
+        password: null,
+        data: {},
+        headers: {
+            'Content-type': 'application/x-www-form-urlencoded'
+        },
+        responseType: 'text',
+        timeout: null,
+        withCredentials: false
+    },
+
+
+//
+// Methods
+//
+
+    /**
+     * Feature test
+     * @return {Boolean} If true, required methods and APIs are supported
+     */
+    supports: function () {
+        return 'XMLHttpRequest' in window && 'JSON' in window && 'Promise' in window;
+    },
+
+    /**
+     * Merge two or more objects together.
+     * @param   {Object}   objects  The objects to merge together
+     * @returns {Object}            Merged values of defaults and options
+     */
+    extend: function () {
+        var self = this;
+        // Variables
+        var extended = {};
+
+        // Merge the object into the extended object
+        var merge = function (obj) {
+            for (var prop in obj) {
+                if (obj.hasOwnProperty(prop)) {
+                    if (Object.prototype.toString.call(obj[prop]) === '[object Object]') {
+                        extended[prop] = self.extend(extended[prop], obj[prop]);
+                    } else {
+                        extended[prop] = obj[prop];
+                    }
+                }
+            }
+        };
+
+        // Loop through each object and conduct a merge
+        for (var i = 0; i < arguments.length; i++) {
+            var obj = arguments[i];
+            merge(obj);
+        }
+
+        return extended;
+
+    },
+
+    /**
+     * Parse text response into JSON
+     * @private
+     * @param  {String} req The response
+     * @return {Array}      A JSON Object of the responseText, plus the orginal response
+     */
+    parse: function (req) {
+        var result;
+        if (this.settings.responseType !== 'text' && this.settings.responseType !== '') {
+            return {data: req.response, xhr: req};
+        }
+        try {
+            result = JSON.parse(req.responseText);
+        } catch (e) {
+            result = req.responseText;
+        }
+        return {data: result, xhr: req};
+    },
+
+    /**
+     * Convert an object into a query string
+     * @link   https://blog.garstasio.com/you-dont-need-jquery/ajax/
+     * @param  {Object|Array|String} obj The object
+     * @return {String}                  The query string
+     */
+    param: function (obj) {
+
+        // If already a string, or if a FormData object, return it as-is
+        if (typeof (obj) === 'string' || Object.prototype.toString.call(obj) === '[object FormData]') return obj;
+
+        // If the content-type is set to JSON, stringify the JSON object
+        if (/application\/json/i.test(this.settings.headers['Content-type']) || Object.prototype.toString.call(obj) === '[object Array]') return JSON.stringify(obj);
+
+        // Otherwise, convert object to a serialized string
+        var encoded = [];
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                encoded.push(encodeURIComponent(prop) + '=' + encodeURIComponent(obj[prop]));
+            }
+        }
+        return encoded.join('&');
+
+    },
+
+    /**
+     * Make an XHR request, returned as a Promise
+     * @param  {String} url The request URL
+     * @return {Promise}    The XHR request Promise
+     */
+    makeRequest: function (url) {
+
+        // Create the XHR request
+        var request = new XMLHttpRequest();
+        var self = this;
+
+        // Setup the Promise
+        var xhrPromise = new Promise(function (resolve, reject) {
+
+            // Setup our listener to process compeleted requests
+            request.onreadystatechange = function () {
+
+                // Only run if the request is complete
+                if (request.readyState !== 4) return;
+
+                // Process the response
+                if (request.status >= 200 && request.status < 300) {
+                    // If successful
+                    resolve(self.parse(request));
+                } else {
+                    // If failed
+                    reject({
+                        status: request.status,
+                        statusText: request.statusText,
+                        responseText: request.responseText
+                    });
+                }
+
+            };
+
+            // Setup our HTTP request
+            request.open(self.settings.method, url, true, self.settings.username, self.settings.password);
+            request.responseType = self.settings.responseType;
+
+            // Add headers
+            for (var header in self.settings.headers) {
+                if (self.settings.headers.hasOwnProperty(header)) {
+                    request.setRequestHeader(header, self.settings.headers[header]);
+                }
+            }
+
+            // Set timeout
+            if (self.settings.timeout) {
+                request.timeout = self.settings.timeout;
+                request.ontimeout = function (e) {
+                    reject({
+                        status: 408,
+                        statusText: 'Request timeout'
+                    });
+                };
+            }
+
+            // Add withCredentials
+            if (self.settings.withCredentials) {
+                request.withCredentials = true;
+            }
+
+            // Send the request
+            request.send(self.param(self.settings.data));
+
+        });
+
+        // Cancel the XHR request
+        xhrPromise.cancel = function () {
+            request.abort();
+        };
+
+        // Return the request as a Promise
+        return xhrPromise;
+
+    },
+
+    /**
+     * Instatiate Atomic
+     * @param {String} url      The request URL
+     * @param {Object} options  A set of options for the request [optional]
+     */
+    atomic: function (url, options) {
+
+        // Check browser support
+        if (!this.supports()) throw 'Atomic: This browser does not support the methods used in this plugin.';
+
+        // Merge options into defaults
+        this.settings = this.extend(this.defaults, options || {});
+
+        // Make request
+        return this.makeRequest(url);
+
+    }
+};
