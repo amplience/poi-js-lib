@@ -41,12 +41,12 @@ var TestHelpers = {
             (typeof hotspotData.$image === 'object') &&
             (typeof hotspotData.$parent === 'object') &&
             (typeof hotspotData.$target === 'object') &&
-            (hotspotData.area !== 'undefined') &&
-            (hotspotData.area.selector.length > 0) &&
-            (hotspotData.area.target.length > 0) &&
-            (hotspotData.area.points.length === 4) &&
-            (typeof hotspotData.area.points[0].x === 'number') &&
-            (typeof hotspotData.area.points[0].y === 'number')
+            (hotspotData.polygon !== 'undefined') &&
+            (hotspotData.polygon.selector.length > 0) &&
+            (hotspotData.polygon.target.length > 0) &&
+            (hotspotData.polygon.points.length === 4) &&
+            (typeof hotspotData.polygon.points[0].x === 'number') &&
+            (typeof hotspotData.polygon.points[0].y === 'number')
 
         ) {
             return true;

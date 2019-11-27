@@ -1,12 +1,12 @@
 'use strict';
 
-POI.prototype.areaInterest = function () {
+POI.prototype.polygons = function () {
     var parent = this;
 
     var methods = {
         create: function (point, imgInfo) {
             //Create hotspots, add class, styles, find parent, add event callbacks
-            var callbacks = imgInfo.data.areaCallbacks;
+            var callbacks = imgInfo.data.polygonCallbacks;
             var selector = point.selector;
 
             if (!selector) {
@@ -26,21 +26,17 @@ POI.prototype.areaInterest = function () {
                 $svg.setAttributeNS(null, 'viewBox', '0 0 ' + imgInfo.dimensions.width + ' ' + imgInfo.dimensions.height);
                 $parent.appendChild($svg);
                 imgInfo.svg = $svg;
-            }
-            else {
+            } else {
                 $svg = imgInfo.svg;
             }
 
             if (selector.indexOf('.') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttributeNS(null, 'class', selector);
-            }
-
-            else if (selector.indexOf('#') === 0) {
+            } else if (selector.indexOf('#') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttributeNS(null, 'id', selector);
-            }
-            else {
+            } else {
                 $elem.setAttributeNS(null, 'class', selector);
             }
 
@@ -61,7 +57,7 @@ POI.prototype.areaInterest = function () {
                         $image: imgInfo.$img,
                         $target: $group,
                         $parent: $parent,
-                        area: point,
+                        polygon: point,
                         imgInfo: imgInfo
                     });
                 }

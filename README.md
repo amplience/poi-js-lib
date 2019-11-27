@@ -37,7 +37,7 @@ POI.init({
             },
             {
                 name: "zinc_4a_zinc_tealandbluecombination_view2",
-                areaCallbacks:[
+                polygonCallbacks:[
                     {
                         target: "rightLeg",
                         action: "click",
@@ -63,6 +63,27 @@ POI.init({
 This way, there is no need to make new AJAX request. 
 In the example above this param is commented out for demonstration purposes
 
+### Specifying hotspots\polygons to all images in containers with containerClass class
+
+
+
+```
+#!javascript
+name: "*",
+hotspotCallbacks:[
+    {
+            target: "*",
+            action: "click",
+            callback: function(evt, settings){
+                console.log('generic click', settings);
+    
+            },
+            initCallback: function(settings){
+                console.log('init callback polygon', settings);
+            }
+    }
+]
+```
 
 ### Event handlers example attached to hotspots ###
 
@@ -82,13 +103,13 @@ hotspotCallbacks:[
 
 ```
 
-### Event handlers example attached to area of interest ###
+### Event handlers example attached to polygons ###
 
 
 
 ```
 #!javascript
-areaCallbacks:[
+polygonCallbacks:[
         {
             target: "rightPillow",
             action: "click",
@@ -100,7 +121,7 @@ areaCallbacks:[
 
 ```
 
-### Specifying universal callback for every hotspot\area of interest
+### Specifying universal callback for every hotspot\polygon
 
 
 
@@ -115,7 +136,7 @@ hotspotCallbacks:[
     
             },
             initCallback: function(settings){
-                console.log('init callback area', settings);
+                console.log('init callback polygon', settings);
             }
     }
 ]
