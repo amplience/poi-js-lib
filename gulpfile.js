@@ -20,7 +20,8 @@ gulp.task('build', function () {
         './src/poi-reusable.js',
         './src/poi-dom.js',
         './src/poi-hotspot.js',
-        './src/poi-area-interest.js',
+        './src/poi-polygon.js',
+        './src/poi-ajax.js',
         './src/poi.js'
     ])
         .pipe(plumber(function (error) {

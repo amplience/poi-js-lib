@@ -19,15 +19,14 @@ POI.prototype.hotspots = function () {
             if (selector.indexOf('.') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttribute('class', selector);
-            }
-
-            else if (selector.indexOf('#') === 0) {
+            } else if (selector.indexOf('#') === 0) {
                 selector = selector.slice(1);
                 $elem.setAttribute('id', selector);
-            }
-            else {
+            } else {
                 $elem.setAttribute('class', selector);
             }
+
+            $elem.setAttribute('data-type', "poi-hotspot");
 
             var $parent = parent.dom.getClosest(imgInfo.$img, '.' + parent.params.containerClass);
 

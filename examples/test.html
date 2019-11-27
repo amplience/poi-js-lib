@@ -124,7 +124,7 @@
                         }
                     }
                 ],
-                areaCallbacks:[
+                polygonCallbacks:[
                     {
                         target: "*",
                         action: "click",
@@ -133,7 +133,7 @@
 
                         },
                         initCallback: function(settings){
-                            console.log('init callback area', settings);
+                            console.log('init callback polygon', settings);
                         }
                     },
                     {
@@ -154,7 +154,7 @@
                             var $polygon = settings.$target.querySelector('polygon');
                             test.polygon.initCallbackData = settings;
                             test.polygon.points = $polygon.getAttribute('points').trim();
-                            test.polygon.rawPoints= settings.area.points;
+                            test.polygon.rawPoints= settings.polygon.points;
                         }
                     }
                 ]
