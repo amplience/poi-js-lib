@@ -3,11 +3,12 @@
 This lib allows to add responsive hotspots to specified images
 
 ### Prerequisite ###
-It is preferred to use **node** v7+
+It is preferred to use **node** v7+ up to v11
 
 ### Installation ###
 
 * npm install
+* npm install gulp -g
 * gulp
 
 
