@@ -20,7 +20,7 @@
   "devDependencies": {
     "chromedriver": "^2.33.2",
     "deep-equal": "^1.0.1",
-    "gulp": "^3.9.0",
+    "gulp": "^4.0.0",
     "gulp-concat": "^2.6.0",
     "gulp-gzip": "^1.4.0",
     "gulp-jshint": "^2.0.1",
