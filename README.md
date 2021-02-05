@@ -19,7 +19,7 @@ It is preferred to use **node** v7+ up to v11
 #!javascript
 
 POI.init({
-        domain: 'https://classic.cdn.media.amplience.net',
+        domain: 'https://cdn.media.amplience.net',
         account: 'your_account_name',
         containerClass: 'img-container',
         imgClass: 'js-poi-img',
